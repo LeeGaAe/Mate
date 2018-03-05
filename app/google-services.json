@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "677699649979",
+    "firebase_url": "https://gamate-4c0ad.firebaseio.com",
+    "project_id": "gamate-4c0ad",
+    "storage_bucket": "gamate-4c0ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677699649979:android:749565ad973fbb0f",
+        "android_client_info": {
+          "package_name": "com.example.mate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "677699649979-jsg1jbi0v04j8dg774q4he71sml54k23.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBc3I6-gYZWS1pbKeVx6HM4LReaolelXLI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
