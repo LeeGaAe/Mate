@@ -208,7 +208,7 @@ public class SignUpActivity extends Activity {
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                 SignUpVo vo = snapshot.getValue(SignUpVo.class);
 
-                if (vo != null && mEditEmail.getText().toString().equals(vo.getEmail())) {
+                if (mEditEmail.getText().toString().equals(vo.getEmail())) {
                     Toast.makeText(mContext, "이미 사용중인 아이디입니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
