@@ -139,7 +139,7 @@ public class LoginActivity extends Activity {
             Log.d("json", json);
             PreferenceUtil.getInstance(getApplicationContext()).setString(PreferenceUtil.MY_INFO, json);
 
-            if (vo.getGroupID()==null) {
+            if (vo.getPartnerVo()==null) {
                 mIntent = new Intent(mContext, ConnectPartnerActivity.class);
                 startActivity(mIntent);
                 finish();

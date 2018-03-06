@@ -77,11 +77,12 @@
         </LinearLayout>
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/ll"
+    <LinearLayout
+        android:id="@+id/layout_connect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -96,26 +97,102 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/round"
+                android:background="@drawable/corner_round"
                 android:gravity="center"
-                android:hint="@string/partner_phone_num"
+                android:hint="상대방의 핸드폰번호를 입력하세요."
                 android:inputType="phone"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:textColor="@color/Bold_Gray"
                 android:textColorHint="@color/Bold_Gray"
-                android:textSize="15dp" />
+                android:textSize="13dp" />
 
             <ImageView
                 android:id="@+id/btn_connect"
                 android:layout_width="80dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:src="@drawable/selector_btn_connect"/>
+                android:layout_height="65dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/selector_btn_connect" />
 
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_wait"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/loading_connect"
+                android:layout_width="125dp"
+                android:layout_height="30dp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center|top"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="상대방의 연결을 기다리는 중입니다."
+                android:textColor="@color/White"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="앱을 종료하지 마세요."
+                android:textColor="@color/Light_Gray" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="서로 계정이 연결되어야 서비스를 이용하실 수 있습니다."
+                android:textColor="@color/Light_Gray" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/partner_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/partner_uid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+
+    </LinearLayout>
 
 </LinearLayout>

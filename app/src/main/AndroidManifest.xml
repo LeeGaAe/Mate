@@ -23,7 +23,7 @@
         <activity android:name=".Activity.SearchIDActivity" />
         <activity android:name=".Activity.SearchPwdActivity" />
         <activity android:name=".Activity.ConnectPartnerActivity" />
-        <activity android:name=".Activity.ConnectWaitActivity" />
+        <!--<activity android:name=".Activity.ConnectWaitActivity" />-->
 
         <!--<activity android:name=".Activity.MainActivity" />-->
         <activity android:name=".Activity.FragmentMain" />
@@ -77,6 +77,7 @@
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="android.permission.CAMERA" />

@@ -40,6 +40,10 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
         this.mItems = mItems;
     }
 
+    public void setData(ArrayList<DiaryVo> mItems){
+        this.mItems = mItems;
+    }
+
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 

@@ -138,6 +138,7 @@ public class SignUpActivity extends Activity {
                     Toast.makeText(mContext, "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     mDBRef.child("user").addListenerForSingleValueEvent(mIdChkListener);
+//                    Toast.makeText(mContext, "왜안됨", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -207,7 +208,7 @@ public class SignUpActivity extends Activity {
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                 SignUpVo vo = snapshot.getValue(SignUpVo.class);
 
-                if (mEditEmail.getText().toString().equals(vo.getEmail())) {
+                if (vo != null && mEditEmail.getText().toString().equals(vo.getEmail())) {
                     Toast.makeText(mContext, "이미 사용중인 아이디입니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -225,7 +226,7 @@ public class SignUpActivity extends Activity {
     //입력사항 기록하기
     private void registerUser() {
 
-        String email = mEditEmail.getText().toString().trim();
+        final String email = mEditEmail.getText().toString().trim();
         String pwd = mEditPwd.getText().toString().trim();
         String nickname = mNickname.getText().toString().trim();
         String gender = GenderStr;
@@ -277,7 +278,9 @@ public class SignUpActivity extends Activity {
                     mDBRef.child("user").child(task.getResult().getUser().getUid()).setValue(signUpVo);
 
                     Toast.makeText(mContext, "회원가입 완료", Toast.LENGTH_SHORT).show();
-                    onBackPressed();
+                    mIntent = new Intent(mContext,LoginActivity.class);
+                    startActivity(mIntent);
+                    finish();
 
                 } else {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);

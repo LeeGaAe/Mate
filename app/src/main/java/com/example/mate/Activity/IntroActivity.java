@@ -57,29 +57,37 @@ public class IntroActivity extends Activity {
             public void run() {
 
                 if (mUser == null) { //로그인을 안했을 때
-//                    mIntent = new Intent(mContext, LoginActivity.class);
-                    mIntent = new Intent(mContext, FragmentMain.class);
+                    mIntent = new Intent(mContext, LoginActivity.class);
+//                    mIntent = new Intent(mContext, FragmentMain.class);
                     startActivity(mIntent);
                     finish();
+                } else { //했을 때
+                    mDBRef.addValueEventListener(isPartner);
                 }
-//                else { //했을 때
-//                    mDBRef.addValueEventListener(isPartner);
-//                }
             }
         }, 2000);
     }
 
-//    //파트너 연결 유무확인
-//    ValueEventListener isPartner = new ValueEventListener() {
-//        @Override
-//        public void onDataChange(DataSnapshot dataSnapshot) {
-//
+    //파트너 연결 유무확인
+    ValueEventListener isPartner = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
 //            SignUpVo vo = dataSnapshot.getValue(SignUpVo.class);
-//
-//            String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-//            SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
-//
-//
+
+            String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
+            SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
+
+
+            if (java.getPartnerVo() == null) {
+                mIntent = new Intent(mContext, ConnectPartnerActivity.class);
+                startActivity(mIntent);
+                finish();
+
+            } else {
+                Toast.makeText(mContext, "메인으로 가기", Toast.LENGTH_SHORT).show();
+            }
+
 //            if (java.getGroupID()==null) {
 //                mIntent = new Intent(mContext, ConnectPartnerActivity.class);
 //                startActivity(mIntent);
@@ -87,10 +95,10 @@ public class IntroActivity extends Activity {
 //            } else {
 //                Toast.makeText(mContext, "메인으로 가기", Toast.LENGTH_SHORT).show();
 //            }
-//        }
-//
-//        @Override
-//        public void onCancelled(DatabaseError databaseError) {
-//        }
-//    };
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+        }
+    };
 }

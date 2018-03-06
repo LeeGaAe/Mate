@@ -108,9 +108,12 @@ public class DiaryPageActivity extends Activity {
             DiaryVo vo = dataSnapshot.getValue(DiaryVo.class);
             mItems.add(vo);
 
-            adapter = new DiaryPageAdapter(mItems);
+//            adapter = new DiaryPageAdapter(mItems);
             mLv_Diary.setAdapter(adapter);
+
+            adapter.setData(mItems);
             adapter.notifyDataSetChanged();
+
             mLv_Diary.setHasFixedSize(true);
 
             mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
