@@ -44,22 +44,32 @@ import butterknife.ButterKnife;
 public class ConnectPartnerActivity extends Activity {
 
     private Context mContext;
-    private Intent mIntent;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
 
-    @BindView(R.id.btn_back) LinearLayout mBtnBack;
-    @BindView(R.id.layout_connect) LinearLayout mLayConnect;
-    @BindView(R.id.layout_wait) LinearLayout mLayWait;
-    @BindView(R.id.part_phone) EditText mEditPartPhone;
-    @BindView(R.id.btn_connect) ImageView mBtnConnect;
+    @BindView(R.id.btn_back)
+    LinearLayout mBtnBack;
+    @BindView(R.id.layout_connect)
+    LinearLayout mLayConnect;
+    @BindView(R.id.layout_wait)
+    LinearLayout mLayWait;
+    @BindView(R.id.part_phone)
+    EditText mEditPartPhone;
+    @BindView(R.id.btn_connect)
+    ImageView mBtnConnect;
 
-    @BindView(R.id.loading_connect) ImageView mLoadingConnect;
-//    String groupID;
+    @BindView(R.id.loading_connect)
+    ImageView mLoadingConnect;
 
     String json;
     SignUpVo java;
+
+//    int cnt = 0;
+//    int sum = 0;
+
+    int cnt;
+//    int sum;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,14 +82,11 @@ public class ConnectPartnerActivity extends Activity {
         mDBRef = mDatabase.getReference();
         Glide.with(this).load(R.raw.loading_connect).into(mLoadingConnect);
 
+//        int cnt = 0;
         init();
 
         json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
-
-
-
-//        groupID = mDBRef.push().getKey();
 
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,10 +113,12 @@ public class ConnectPartnerActivity extends Activity {
             }
         });
 
+
     }
 
     Timer timer;
-    private void init(){
+
+    private void init() {
 
         String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
         SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
@@ -124,38 +133,34 @@ public class ConnectPartnerActivity extends Activity {
             mLayConnect.setVisibility(View.GONE);
 
             // 1초 뒤에 10초에 한번씩 task 돌림
-            timer = new Timer();
-            timer.scheduleAtFixedRate(task, 1000, 10000);
+//            timer = new Timer();
+//            timer.scheduleAtFixedRate(task, 1000, 10000);
 
         }
 
     }
 
 
+//    TimerTask task = new TimerTask() {
+//
+//        public void run() {
+//
+//            try {
+//
+//                check();
+//
+//            } catch (Exception e) {
+//
+//                e.printStackTrace();
+//
+//            }
+//
+//        }
+//
+//    };
 
-    TimerTask task = new TimerTask(){
 
-        public void run() {
-
-            try {
-
-                check();
-
-            } catch (Exception e) {
-
-                e.printStackTrace();
-
-            }
-
-        }
-
-    };
-
-
-    private void search(){
-
-//        String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-//        SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
+    private void search() {
 
         mDBRef.child("wait").child(mEditPartPhone.getText().toString()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -182,10 +187,10 @@ public class ConnectPartnerActivity extends Activity {
 
     }
 
-    private void addGroupId(){
+    private void addGroupId() {
 
-//        String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-//        final SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String me = user.getUid();
 
         final String groupId = mDBRef.push().getKey();
 
@@ -197,15 +202,21 @@ public class ConnectPartnerActivity extends Activity {
 
                         json = new Gson().toJson(java);
                         PreferenceUtil.getInstance(getApplicationContext()).setString(PreferenceUtil.MY_INFO, json);
-                        Log.d("lga",json);
+
+                        mDBRef.child("user").child(me).child("groupId").setValue(groupId);
 
                         mLayConnect.setVisibility(View.GONE);
                         mLayWait.setVisibility(View.VISIBLE);
+
+                        mDBRef.child("user").addValueEventListener(check);
+
+//                        timer = new Timer();
+//                        timer.scheduleAtFixedRate(task, 1000, 10000);
                     }
                 });
     }
 
-    private void connect(final String gid){
+    private void connect(final String gid) {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String me = user.getUid();
@@ -218,252 +229,95 @@ public class ConnectPartnerActivity extends Activity {
 
                         json = new Gson().toJson(java);
                         PreferenceUtil.getInstance(getApplicationContext()).setString(PreferenceUtil.MY_INFO, json);
-                        Log.d("lga",json);
 
                         mLayConnect.setVisibility(View.GONE);
                         mLayWait.setVisibility(View.VISIBLE);
 
+//                        cnt++;
+
+                        mDBRef.child("user").addValueEventListener(check);
+
+//                        timer = new Timer();
+//                        timer.scheduleAtFixedRate(task, 1000, 10000);
                     }
                 });
     }
 
-    private void check(){
 
-        mDBRef.child("user").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+//     !!!!!!!!!!!!!!!!!!!!가애 연습!!!!!!!!!!!!!!!!!!!!!!!!
+    ValueEventListener check = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                int cnt;
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                SignUpVo vo = snapshot.getValue(SignUpVo.class);
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    SignUpVo vo = snapshot.getValue(SignUpVo.class);
+                if (java.getGroupID().equals(snapshot.child("groupId").getValue().toString())){
+                    Log.d("lga","groupId"+ snapshot.child("groupId").getValue().toString());
 
+                    cnt++;
 
+                    Log.d("lga","cnt" + cnt);
+
+                    if (cnt == 2) {
+
+                        break;
+                    } else {
+
+                        return;
+
+                    }
                 }
 
-
-//                if(dataSnapshot.getChildrenCount()==2){
-//
-//                    Toast.makeText(mContext, "FragmentHome 으로 이동", Toast.LENGTH_SHORT).show();
-////                    mIntent = new Intent(mContext,FragmentHome.class);
-////                    startActivity(mIntent);
-////                    finish();
+//                if (java.getGroupID().equals(vo.getGroupID())) {
+//                    Log.d("lga",vo.getEmail());
 //                }
-
             }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            Toast.makeText(mContext,"연결?",Toast.LENGTH_SHORT).show();
 
-            }
-        });
+        }
 
-    }
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
 
-
-//    ValueEventListener mCreateGroupID = new ValueEventListener() {
-//        @Override
-//        public void onDataChange(DataSnapshot dataSnapshot) {
+//    private void check() {
 //
-//            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                SignUpVo vo = snapshot.getValue(SignUpVo.class);
+//        cnt = 0;
 //
-//                if (mEditPartPhone.getText().toString().equals(vo.getPhone_num())) { // 상대방 번호찾기
-//
-////                    mDBRef.child("user").addValueEventListener(mFindGroupID); //대기하고 있는지 확인.
-//
-//                    //대기하고 있는지 확인.
-//                    mDBRef.child("wait").child(mEditPartPhone.getText().toString()).addListenerForSingleValueEvent(mFindGroupID);
-//
-//                    return;
-//                }
-//            }
-//            Toast.makeText(mContext, "실패", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        @Override
-//        public void onCancelled(DatabaseError databaseError) {
-//
-//        }
-//
-//    };
-//
-//    ValueEventListener mFindGroupID = new ValueEventListener() {
-//
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        String me = user.getUid();
-//
-//        @Override
-//        public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//            String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-//            SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
-//
-//            if (dataSnapshot.getChildrenCount() == 0) {
-//
-//                java.setGroupID(groupID);
-//
-//                mIntent = new Intent(mContext, ConnectWaitActivity.class);
-//                startActivity(mIntent);
-//
-//                mDBRef.child("wait").child(java.getPhone_num()).child(java.getGroupID()).child(java.getNickname()).setValue(java);
-//
-//            } else {
+//        mDBRef.child("user").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
 //
 //                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 //                    SignUpVo vo = snapshot.getValue(SignUpVo.class);
 //
-//                    if (vo.getPhone_num().equals(mEditPartPhone.getText().toString())) {
+//                    if (java.getGroupID().equals(vo.getGroupID())) {
 //
-//                        Log.d("lga",vo.getGroupID());
-//                        java.setGroupID(vo.getGroupID());
+//                        cnt++;
 //
+//                    }
+//
+//                    if (cnt == 2) {
+//                        break;
 //                    }
 //
 //                }
 //
-//                mDBRef.child("wait").child(mEditPartPhone.getText().toString())
-//                        .child(java.getGroupID()).setValue(java.getEmail());
+//                Toast.makeText(mContext, "메인으로 이동", Toast.LENGTH_SHORT).show();
 //
-//                Toast.makeText(mContext, "메인으로갑니다.", Toast.LENGTH_SHORT).show();
 //
 //            }
 //
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
 //
-//        }
-//
-//        @Override
-//        public void onCancelled(DatabaseError databaseError) {
-//
-//
-//        }
-//
-//    };
-//
-//    private void check(){
-//
-//        String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-//        SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
-//
-//
-//        DatabaseReference doc = mDBRef.child("wait").child(java.getPhone_num()).child(java.getGroupID());
-//        Log.d("lga", "doc" + doc);
-//
-//
-//
+//            }
+//        });
 //
 //    }
 }
-
-
-//
-//    ValueEventListener mFindGroupID = new ValueEventListener() {
-//
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        String me = user.getUid();
-//
-//        @Override
-//        public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//            String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-//            SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
-//
-//
-//            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                SignUpVo vo = snapshot.getValue(SignUpVo.class);
-//
-//                if (mEditPartPhone.getText().toString().equals(vo.getPhone_num())) { // 상대방 번호찾기
-//
-//                    if (vo.getGroupID() == null) { // groupID 가 없을때
-//
-//                        java.setGroupID(groupID);
-//
-//                        mDBRef.child("wait").child(java.getGroupID()).child(java.getPhone_num()).setValue(java);
-//                        mDBRef.child("user").child(me).setValue(java);
-//
-//
-//                        mIntent = new Intent(mContext, ConnectWaitActivity.class);
-//                        mIntent.putExtra("partnerNum", mEditPartPhone.getText().toString());
-//                        startActivity(mIntent);
-//                        finish();
-//
-//                        return;
-//
-//                    } else {
-//
-//                        java.setGroupID(vo.getGroupID());
-//
-//                        mDBRef.child("wait").child(vo.getGroupID()).child(java.getPhone_num()).setValue(java);
-//                        mDBRef.child("user").child(me).setValue(java);
-//
-//                        Toast.makeText(mContext, "그룹아이디 가져오기.", Toast.LENGTH_SHORT).show();
-//
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//            mIntent = new Intent(mContext, ConnectWaitActivity.class);
-//            mIntent.putExtra("partnerNum", mEditPartPhone.getText().toString());
-//            startActivity(mIntent);
-//            finish();
-//
-//
-//        }
-//
-//        @Override
-//        public void onCancelled(DatabaseError databaseError) {
-//
-//
-//        }
-//
-//    };
-
-//        /    ValueEventListener mFindGroupID = new ValueEventListener() {
-//
-////        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-////        String me = user.getUid();
-//
-//        @Override
-//        public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//            String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-//            SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
-//
-//            if (dataSnapshot.getChildrenCount() == 0) {
-//
-//                java.setGroupID(groupID);
-//
-//                mDBRef.child("wait").child(java.getPhone_num()).child(groupID).setValue(java);
-////                mDBRef.child("user").child(me).setValue(java);
-//
-//                mIntent = new Intent(mContext, ConnectWaitActivity.class);
-////                mIntent.putExtra("partnerNum", mEditPartPhone.getText().toString());
-//                startActivity(mIntent);
-////                finish();
-//
-//            } else {
-////
-////                String gid = dataSnapshot.child(groupID).getValue().toString();
-//
-//                String groupId = dataSnapshot.child(groupID).getValue().toString();
-//                java.setGroupID(groupId);
-//
-//                mDBRef.child("wait").child(mEditPartPhone.getText().toString()).child(groupID).setValue(java);
-//
-////                mDBRef.child("wait").child(mEditPartPhone.getText().toString()).setValue(java);
-////                mDBRef.child("couple").child(gid).setValue(java);
-//
-////                mDBRef.child("wait").child(java.getPhone_num()).setValue(java);
-////
-//                mIntent = new Intent(mContext, FragmentMain.class);
-//                startActivity(mIntent);
-//                finish();
-//
-//                Toast.makeText(mContext, "연결", Toast.LENGTH_SHORT).show();
-//
-//            }
-//

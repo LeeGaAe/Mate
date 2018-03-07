@@ -96,7 +96,7 @@ public class LoginActivity extends Activity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
 
-                                        mDBRef.child(task.getResult().getUser().getUid()).addValueEventListener(isPartner);
+                                        mDBRef.child(task.getResult().getUser().getUid()).addListenerForSingleValueEvent(isPartner);
 
                                     } else {
                                         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);

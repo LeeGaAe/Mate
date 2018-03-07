@@ -38,10 +38,11 @@ dependencies {
     //리사이클러뷰
     compile 'com.android.support:recyclerview-v7:27.0.2'
 
-    compile 'com.google.firebase:firebase-auth:11.6.2'
-    compile 'com.google.firebase:firebase-core:11.6.2'
-    compile 'com.google.firebase:firebase-database:11.6.2'
-    compile 'com.google.firebase:firebase-messaging:11.6.2'
+    compile 'com.google.firebase:firebase-auth:11.8.0'
+    compile 'com.google.firebase:firebase-core:11.8.0'
+    compile 'com.google.firebase:firebase-database:11.8.0'
+    compile 'com.google.firebase:firebase-messaging:11.8.0'
+    compile 'com.google.firebase:firebase-firestore:11.8.0'
 
     compile 'com.google.code.gson:gson:2.8.2'
 
