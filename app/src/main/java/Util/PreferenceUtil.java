@@ -16,6 +16,8 @@ public final class PreferenceUtil {
     final static public String FIRST_RUN_CHECK = "isFirstRun";
     final static public String APP_THEME_COLOR = "isThemeColor";
     final static public String MY_INFO = "MyInfo";
+    final static public String D_DAY = "D_day";
+    final static public String SELECT_D_DAY = "S_D_day";
 
 
     public PreferenceUtil(Context context) {

@@ -1,14 +1,13 @@
 package com.example.mate.Activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -41,7 +40,6 @@ public class FragmentMain extends FragmentActivity {
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
-    private FirebaseAuth mAuth;
 
     @BindView(R.id.bottom_area)
     LinearLayout mBottomArea;
@@ -77,17 +75,11 @@ public class FragmentMain extends FragmentActivity {
         String ThemeColor = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.APP_THEME_COLOR, Const.APP_THEME_COLORS[0]);
         mBottomArea.setBackgroundColor(Color.parseColor(ThemeColor));
 
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference().child("user");
+
         json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
-
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference();
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_place, new FragmentHome())
-                .commit();
-
-        changeView();
 
         connectPartnerVo();
 
@@ -99,17 +91,23 @@ public class FragmentMain extends FragmentActivity {
 
             partner();
 
+
+        } else {
+
+            changeView();
         }
 
     }
 
     private void partner(){
 
-        final String me = mAuth.getUid();
 
-        DatabaseReference check = mDBRef.child("user");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String me = user.getUid();
 
-        check.orderByChild("groupId").equalTo(java.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
+//        DatabaseReference check = mDBRef.child("user");
+
+        mDBRef.orderByChild("groupId").equalTo(java.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -128,7 +126,12 @@ public class FragmentMain extends FragmentActivity {
                         json = new Gson().toJson(java);
                         PreferenceUtil.getInstance(getApplicationContext()).setString(PreferenceUtil.MY_INFO, json);
 
-                        mDBRef.child("user").child(me).child("partnerVo").setValue(partnerVo);
+                        mDBRef.child(me).child("partnerVo").setValue(partnerVo);
+
+                        // 초기화면
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_place, new FragmentHome())
+                                .commit();
 
                     }
                 }
@@ -143,11 +146,19 @@ public class FragmentMain extends FragmentActivity {
     }
 
     private void changeView() {
+
+
         FrameLayout frame = (FrameLayout) findViewById(R.id.fragment_place);
+
+        // 초기화면
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_place, new FragmentHome())
+                .commit();
 
         if (frame.getChildCount() > 0) { // FrameLayout에서 뷰 삭제.
             frame.removeViewAt(0);
         }
+
 
         View view = null;
 

@@ -151,7 +151,8 @@ public class ConnectPartnerActivity extends Activity {
 
     private void search() {
 
-        mDBRef.child("wait").child(mEditPartPhone.getText().toString()).addValueEventListener(new ValueEventListener() {
+        mDBRef.child("wait").child(mEditPartPhone.getText().toString()).addListenerForSingleValueEvent(
+                new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
