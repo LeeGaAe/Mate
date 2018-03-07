@@ -44,6 +44,7 @@ import butterknife.ButterKnife;
 public class ConnectPartnerActivity extends Activity {
 
     private Context mContext;
+    private Intent mIntent;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
@@ -65,12 +66,6 @@ public class ConnectPartnerActivity extends Activity {
     String json;
     SignUpVo java;
 
-//    int cnt = 0;
-//    int sum = 0;
-
-    int cnt;
-//    int sum;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,9 +76,6 @@ public class ConnectPartnerActivity extends Activity {
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference();
         Glide.with(this).load(R.raw.loading_connect).into(mLoadingConnect);
-
-//        int cnt = 0;
-        init();
 
         json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
@@ -98,8 +90,6 @@ public class ConnectPartnerActivity extends Activity {
         mBtnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-                SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
 
                 if (mEditPartPhone.getText().toString().equals(java.getPhone_num())) {
 
@@ -113,15 +103,14 @@ public class ConnectPartnerActivity extends Activity {
             }
         });
 
+        init();
+
 
     }
 
     Timer timer;
 
     private void init() {
-
-        String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-        SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
 
         if (java.getGroupID() == null) {
 
@@ -132,32 +121,32 @@ public class ConnectPartnerActivity extends Activity {
             mLayWait.setVisibility(View.VISIBLE);
             mLayConnect.setVisibility(View.GONE);
 
-            // 1초 뒤에 10초에 한번씩 task 돌림
-//            timer = new Timer();
-//            timer.scheduleAtFixedRate(task, 1000, 10000);
+//             1초 뒤에 10초에 한번씩 task 돌림
+            timer = new Timer();
+            timer.scheduleAtFixedRate(task, 1000, 10000);
 
         }
 
     }
 
 
-//    TimerTask task = new TimerTask() {
-//
-//        public void run() {
-//
-//            try {
-//
-//                check();
-//
-//            } catch (Exception e) {
-//
-//                e.printStackTrace();
-//
-//            }
-//
-//        }
-//
-//    };
+    TimerTask task = new TimerTask() {
+
+        public void run() {
+
+            try {
+
+                check();
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+            }
+
+        }
+
+    };
 
 
     private void search() {
@@ -174,6 +163,7 @@ public class ConnectPartnerActivity extends Activity {
 
                     String gid = dataSnapshot.child("groupId").getValue().toString();
                     connect(gid);
+
                 }
 
             }
@@ -208,12 +198,13 @@ public class ConnectPartnerActivity extends Activity {
                         mLayConnect.setVisibility(View.GONE);
                         mLayWait.setVisibility(View.VISIBLE);
 
-                        mDBRef.child("user").addValueEventListener(check);
+                        timer = new Timer();
+                        timer.scheduleAtFixedRate(task, 1000, 10000);
 
-//                        timer = new Timer();
-//                        timer.scheduleAtFixedRate(task, 1000, 10000);
                     }
                 });
+
+
     }
 
     private void connect(final String gid) {
@@ -233,91 +224,43 @@ public class ConnectPartnerActivity extends Activity {
                         mLayConnect.setVisibility(View.GONE);
                         mLayWait.setVisibility(View.VISIBLE);
 
-//                        cnt++;
+                        timer = new Timer();
+                        timer.scheduleAtFixedRate(task, 1000, 10000);
 
-                        mDBRef.child("user").addValueEventListener(check);
+                        mDBRef.child("wait").child(mEditPartPhone.getText().toString()).setValue(null);
 
-//                        timer = new Timer();
-//                        timer.scheduleAtFixedRate(task, 1000, 10000);
                     }
+
                 });
+
     }
 
+    private void check() {
 
-//     !!!!!!!!!!!!!!!!!!!!가애 연습!!!!!!!!!!!!!!!!!!!!!!!!
-    ValueEventListener check = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
+        DatabaseReference check = mDBRef.child("user");
 
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                SignUpVo vo = snapshot.getValue(SignUpVo.class);
+        check.orderByChild("groupId").equalTo(java.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (java.getGroupID().equals(snapshot.child("groupId").getValue().toString())){
-                    Log.d("lga","groupId"+ snapshot.child("groupId").getValue().toString());
+                if (dataSnapshot.getChildrenCount() == 2) {
 
-                    cnt++;
+                    task.cancel();
+                    timer.cancel();
 
-                    Log.d("lga","cnt" + cnt);
+                    mIntent = new Intent(mContext,FragmentMain.class);
+                    startActivity(mIntent);
+                    finish();
 
-                    if (cnt == 2) {
-
-                        break;
-                    } else {
-
-                        return;
-
-                    }
                 }
 
-//                if (java.getGroupID().equals(vo.getGroupID())) {
-//                    Log.d("lga",vo.getEmail());
-//                }
             }
 
-            Toast.makeText(mContext,"연결?",Toast.LENGTH_SHORT).show();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        }
+            }
+        });
 
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
-
-
-//    private void check() {
-//
-//        cnt = 0;
-//
-//        mDBRef.child("user").addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    SignUpVo vo = snapshot.getValue(SignUpVo.class);
-//
-//                    if (java.getGroupID().equals(vo.getGroupID())) {
-//
-//                        cnt++;
-//
-//                    }
-//
-//                    if (cnt == 2) {
-//                        break;
-//                    }
-//
-//                }
-//
-//                Toast.makeText(mContext, "메인으로 이동", Toast.LENGTH_SHORT).show();
-//
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//    }
+    }
 }

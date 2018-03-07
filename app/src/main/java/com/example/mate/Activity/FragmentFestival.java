@@ -55,25 +55,18 @@ public class FragmentFestival extends Fragment {
 
         View v = inflater.inflate(R.layout.activity_festival, container, false);
 
-//        TextView postingId = (TextView)v.findViewById()
-
-//        int i;
-////        String postingId;
-//
-//        for (i = 1; i < mItems.size(); i++) {
-//            Log.d("lga",""+ i);
-//        }
-
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference().child("festival");
 
         mFestivalList = (RecyclerView) v.findViewById(R.id.list_festival);
 
-
         ValueEventListener festival = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                for (int i =0; i<10; i++) {
+
+                }
                 FestivalVo vo = dataSnapshot.getValue(FestivalVo.class);
                 mItems.add(vo);
 

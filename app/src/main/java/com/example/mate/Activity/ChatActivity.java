@@ -85,7 +85,6 @@ public class ChatActivity extends Activity {
 
         String ThemeColor = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.APP_THEME_COLOR, Const.APP_THEME_COLORS[0]);
         mTopArea.setBackgroundColor(Color.parseColor(ThemeColor));
-//        mBackChat.setBackgroundColor(Color.parseColor(ThemeColor));
 
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override

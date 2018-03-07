@@ -36,13 +36,13 @@
                     android:id="@+id/today"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/d_day"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"/>
+                    android:visibility="gone"/>
 
 
                 <RelativeLayout
@@ -53,7 +53,7 @@
                     <ImageView
                         android:layout_width="170dp"
                         android:layout_height="170dp"
-                        android:src="@drawable/oval_gray_128" />
+                        android:src="@drawable/oval" />
 
                     <LinearLayout
                         android:id="@+id/btn_date_picker"
@@ -76,6 +76,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:textColor="@color/Black"
+                            android:text="0"
                             android:textSize="45dp" />
 
                         <TextView
@@ -126,7 +127,7 @@
                                 android:id="@+id/my_profile"
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
-                                android:src="@drawable/girl" />
+                                android:src="@drawable/user" />
 
                             <TextView
                                 android:id="@+id/my_name"
@@ -142,7 +143,7 @@
                         <ImageView
                             android:layout_width="30dp"
                             android:layout_height="30dp"
-                            android:src="@drawable/heart" />
+                            android:src="@drawable/like" />
 
                         <LinearLayout
                             android:id="@+id/partner_profile"
@@ -156,7 +157,7 @@
                             <ImageView
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
-                                android:background="@drawable/boy" />
+                                android:background="@drawable/user" />
 
                             <TextView
                                 android:id="@+id/partner_name"

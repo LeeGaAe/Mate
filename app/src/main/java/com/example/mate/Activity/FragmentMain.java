@@ -7,12 +7,23 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.example.mate.Activity.Vo.PartnerVo;
+import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import Util.Const;
 import Util.PreferenceUtil;
@@ -28,6 +39,9 @@ public class FragmentMain extends FragmentActivity {
 
     private Intent mIntent;
 
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDBRef;
+    private FirebaseAuth mAuth;
 
     @BindView(R.id.bottom_area)
     LinearLayout mBottomArea;
@@ -44,12 +58,15 @@ public class FragmentMain extends FragmentActivity {
     @BindView(R.id.btn_more)
     LinearLayout mBtnMore;
 
+    String json;
+    SignUpVo java;
 
     @Override
     public void onBackPressed() {
         setResult(Const.RESULT_SETTING_THEME);
         finish();
     }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,16 +77,72 @@ public class FragmentMain extends FragmentActivity {
         String ThemeColor = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.APP_THEME_COLOR, Const.APP_THEME_COLORS[0]);
         mBottomArea.setBackgroundColor(Color.parseColor(ThemeColor));
 
+        json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
+        java = new Gson().fromJson(json, SignUpVo.class);
+
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference();
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_place, new FragmentHome())
                 .commit();
 
         changeView();
 
+        connectPartnerVo();
+
+    }
+
+    private void connectPartnerVo(){
+
+        if (java.partnerVo==null) {
+
+            partner();
+
+        }
+
+    }
+
+    private void partner(){
+
+        final String me = mAuth.getUid();
+
+        DatabaseReference check = mDBRef.child("user");
+
+        check.orderByChild("groupId").equalTo(java.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    SignUpVo vo = snapshot.getValue(SignUpVo.class);
+
+                    if (!java.getEmail().equals(vo.getEmail())) {
+                        PartnerVo partnerVo = new PartnerVo();
+
+                        partnerVo.setPart_email(vo.getEmail());
+                        partnerVo.setPart_name(vo.getNickname());
+                        partnerVo.setPart_phone_num(vo.getPhone_num());
+                        partnerVo.setPart_birth(vo.getBirth());
+
+                        java.setPartnerVo(partnerVo);
+                        json = new Gson().toJson(java);
+                        PreferenceUtil.getInstance(getApplicationContext()).setString(PreferenceUtil.MY_INFO, json);
+
+                        mDBRef.child("user").child(me).child("partnerVo").setValue(partnerVo);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void changeView() {
-//        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         FrameLayout frame = (FrameLayout) findViewById(R.id.fragment_place);
 
         if (frame.getChildCount() > 0) { // FrameLayout에서 뷰 삭제.

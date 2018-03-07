@@ -85,7 +85,9 @@ public class IntroActivity extends Activity {
                 finish();
 
             } else {
-                Toast.makeText(mContext, "메인으로 가기", Toast.LENGTH_SHORT).show();
+                mIntent = new Intent(mContext, FragmentMain.class);
+                startActivity(mIntent);
+                finish();
             }
 
 //            if (java.getGroupID()==null) {
