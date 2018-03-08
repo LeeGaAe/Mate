@@ -105,8 +105,6 @@ public class FragmentMain extends FragmentActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String me = user.getUid();
 
-//        DatabaseReference check = mDBRef.child("user");
-
         mDBRef.orderByChild("groupId").equalTo(java.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -165,6 +163,7 @@ public class FragmentMain extends FragmentActivity {
         mBtnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_place, new FragmentHome())
                         .addToBackStack(null)

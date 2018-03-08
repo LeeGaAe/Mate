@@ -32,20 +32,12 @@ public class PwdSetActivity extends Activity {
     private Context mContext;
     private Intent mIntent;
 
-    @BindView(R.id.Gv_Pwd)
-    GridView mGv_Pwd;
+    @BindView(R.id.Gv_Pwd) GridView mGv_Pwd;
 
-    @BindView(R.id.one)
-    ImageView One;
-
-    @BindView(R.id.two)
-    ImageView Two;
-
-    @BindView(R.id.three)
-    ImageView Three;
-
-    @BindView(R.id.four)
-    ImageView Four;
+    @BindView(R.id.one) ImageView One;
+    @BindView(R.id.two) ImageView Two;
+    @BindView(R.id.three) ImageView Three;
+    @BindView(R.id.four) ImageView Four;
 
     @BindView(R.id.txt_pwd)
     TextView mTxtPwd;
@@ -53,8 +45,8 @@ public class PwdSetActivity extends Activity {
     private ArrayList<Integer> list;
     private PwdAdapter pwd_adapter;
 
-    int cnt = 0;
-//    int del = 1;
+    String mPassword = "";
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +56,12 @@ public class PwdSetActivity extends Activity {
         ButterKnife.bind(this);
         mContext = this;
 
+        setPwd();
+
+
+    }
+
+    private void setPwd() {
         list = new ArrayList<>();
 
         for (int Num_Pwd : Const.APP_PW_SETTING) {
@@ -77,8 +75,14 @@ public class PwdSetActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                int tv = (Integer) parent.getAdapter().getItem(position);
-                mTxtPwd.setText("" + tv);
+
+                if (position != 9 && position != 11) {
+                    int pwd = (Integer) parent.getAdapter().getItem(position);
+                    mPassword = String.valueOf(pwd);
+
+                    Log.d("lga",mPassword);
+
+                }
 
 
                 if (position == 9) {
@@ -92,49 +96,21 @@ public class PwdSetActivity extends Activity {
 
                 if (position == 11) {
 
-                    String data = mTxtPwd.getText().toString();
-                    data = data.substring(0, data.lastIndexOf(" "));
+                    mPassword.substring(mPassword.length() - 1, mPassword.length());
 
                 }
-
-//                switch (cnt) {
-//                    case 1:
-//                        One.setImageResource(R.drawable.black_circle);
-//                        break;
-//
-//                    case 2:
-//                        Two.setImageResource(R.drawable.black_circle);
-//                        break;
-//
-//                    case 3:
-//                        Three.setImageResource(R.drawable.black_circle);
-//                        break;
-//
-//                    case 4:
-//                        Four.setImageResource(R.drawable.black_circle);
-//                        Toast.makeText(mContext, "비밀번호가 설정되었습니다.", Toast.LENGTH_SHORT).show();
-//                        onBackPressed();
-//                        break;
-//                }
-
-//                switch (del) {
-//
-//                    case 2:
-//                        Three.setImageResource(R.drawable.white_circle);
-//                        break;
-//
-//                    case 1:
-//                        Two.setImageResource(R.drawable.white_circle);
-//                        break;
-//
-//                    case 0:
-//                        One.setImageResource(R.drawable.white_circle);
-//                        break;
-//
-//                }
-
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        mIntent = new Intent(mContext, PwdPageActivity.class);
+        mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mIntent);
+        finish();
 
     }
 }

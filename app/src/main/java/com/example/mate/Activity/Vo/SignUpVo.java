@@ -18,6 +18,7 @@ public class SignUpVo {
     public PartnerVo partnerVo;
     public String connectYN;
     public String groupID;
+    public String startDate;
 
     public SignUpVo() {
 
@@ -93,5 +94,13 @@ public class SignUpVo {
 
     public void setGroupID(String groupID) {
         this.groupID = groupID;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
     }
 }

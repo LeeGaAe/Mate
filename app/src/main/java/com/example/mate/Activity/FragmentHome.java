@@ -1,14 +1,10 @@
 package com.example.mate.Activity;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,98 +12,81 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
-import Util.Const;
+import Util.DateUtils;
 import Util.PreferenceUtil;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by 가애 on 2018-03-01.
  */
 
 public class FragmentHome extends Fragment {
+
     private Intent mIntent;
 
-    private ImageView mDiary;
+    @BindView(R.id.my_name) TextView mMyName;
+    @BindView(R.id.partner_name) TextView mPartName;
+    @BindView(R.id.txt_select_start_day) TextView mSelectStartDay;
 
-    private TextView mDday; // D-DAY날짜 출력
-    private TextView mToday; // 오늘 날짜
-    private TextView mday; // 기념일 날짜
+    @BindView(R.id.btn_diary) ImageView mDiary;
 
-    private TextView mMyName; // 내이름
-    private TextView mPartName; // 상대이름
+    @BindView(R.id.partner_profile) LinearLayout mPartProfile;
+    @BindView(R.id.btn_date_picker) LinearLayout mBtnDatePicker;
 
-    private LinearLayout mPartProfile;
-    private LinearLayout mBtnDatePicker; //버튼
-
-    int tYear;
-    int tMonth;
-    int tDay;
-
-    int dYear = 0;
-    int dMonth = 0;
-    int dDay = 0;
-
-    long dday;
-    long today;
-    long result;
-
-    int resultValue = 0;
-    Calendar calendar;  //Today
-    Calendar calendar2;  //D-Day
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDBRef;
 
     String json;
     SignUpVo java;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.activity_main, container, false);
-
-        json = PreferenceUtil.getInstance(v.getContext()).getString(PreferenceUtil.MY_INFO, "");
-        java = new Gson().fromJson(json, SignUpVo.class);
-
-
-
-
-        calendar = Calendar.getInstance();
-        tYear = calendar.get(Calendar.YEAR);
-        tMonth = calendar.get(Calendar.MONTH);
-        tDay = calendar.get(Calendar.DAY_OF_MONTH);
-
-        PreferenceUtil.getInstance(this.getActivity()).getString(PreferenceUtil.SELECT_D_DAY,"");
-
-        /* 선택 날짜 구하기 */
-        calendar2 = Calendar.getInstance();
-        dYear = calendar2.get(Calendar.YEAR);
-        dMonth = calendar2.get(Calendar.MONTH);
-        dDay = calendar2.get(Calendar.DAY_OF_MONTH);
-
-
-
-
-        init(v);
-
-
-        return v;
+        return inflater.inflate(R.layout.activity_main, container, false);
     }
 
-    private void init(View v){
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        mMyName = (TextView) v.findViewById(R.id.my_name);
+        ButterKnife.bind(this, view);
+
+        json = PreferenceUtil.getInstance(getActivity()).getString(PreferenceUtil.MY_INFO, "");
+        java = new Gson().fromJson(json, SignUpVo.class);
+
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference().child("user");
+
+
+        init();
+
+    }
+
+    private void init() {
+
+        if(!TextUtils.isEmpty(java.getStartDate())){
+
+            mSelectStartDay.setText("우리" + "\n" + getDatingPeriod(java.getStartDate()) + "\n" + "일째 사랑중");
+        }
+
         mMyName.setText(java.getNickname());
-
-        mPartName = (TextView) v.findViewById(R.id.partner_name);
         mPartName.setText(java.getPartnerVo().getPart_name());
 
-        mDiary = (ImageView) v.findViewById(R.id.btn_diary);
         mDiary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +95,6 @@ public class FragmentHome extends Fragment {
             }
         });
 
-        mPartProfile = (LinearLayout) v.findViewById(R.id.partner_profile);
         mPartProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,76 +103,81 @@ public class FragmentHome extends Fragment {
             }
         });
 
-
-
-        mToday = (TextView) v.findViewById(R.id.today);//오늘날짜
-        mToday.setText(String.format("%d.%d.%d", tYear, tMonth + 1, tDay));
-
-        mday = (TextView) v.findViewById(R.id.d_day);//선택한날짜
-        PreferenceUtil.getInstance(v.getContext()).getString(PreferenceUtil.SELECT_D_DAY,"");
-
-
-        mDday = (TextView) v.findViewById(R.id.dday);//D-DAY
-        PreferenceUtil.getInstance(this.getActivity()).getString(PreferenceUtil.D_DAY,"");
-
-        mBtnDatePicker = (LinearLayout) v.findViewById(R.id.btn_date_picker);
         /* 선택 날짜 구하기 */
         mBtnDatePicker.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new DatePickerDialog(getActivity(), mDateSetListener, dYear, dMonth, dDay).show();
-                mday.setText(String.format("%d.%d.%d", dYear, dMonth + 1, dDay));  //선택 날짜 출력
-                PreferenceUtil.getInstance(v.getContext()).setString(PreferenceUtil.SELECT_D_DAY,mday.getText().toString());
+                openDatePicker();
             }
         });
     }
 
+    private String getDatingPeriod(String startDate) {
+
+        Date startDay = DateUtils.stringToDate(startDate);
+        Date today = new Date();
+
+        long gap = today.getTime() - startDay.getTime();
+        int period = (int) (gap / (24 * 60 * 60 * 1000)) + 1;
+
+        return String.valueOf(period);
+    }
 
 
-    DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
-        public void onDateSet(DatePicker view, int year, int monthOfYear,
-                              int dayOfMonth) {
-            dYear = year;
-            dMonth = monthOfYear;
-            dDay = dayOfMonth;
+    private void openDatePicker() {
+
+        final Calendar current = Calendar.getInstance();
+
+        int year = current.get(Calendar.YEAR);
+        int month = current.get(Calendar.MONTH);
+        int dayOfMonth = current.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year1, int month1, int dayOfMonth1) {
+
+                Calendar select = Calendar.getInstance();
+                select.set(year1, month1, dayOfMonth1);
+
+                if (current.getTime().compareTo(select.getTime()) < 0) {
+
+                    Toast.makeText(getContext(), R.string.message_start_date_re_select, Toast.LENGTH_SHORT).show();
+
+                } else {
+
+                    String selectDay = year1 + "." + (month1 + 1) + "." + dayOfMonth1;
+
+                    updateInfo(selectDay);
+
+                }
+            }
+        };
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), dateSetListener, year, month, dayOfMonth);
+        datePickerDialog.show();
+
+    }
+
+    private void updateInfo(final String startDay) {
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String me = user.getUid();
+
+        // 여기부터 수정하면 돼 디비에 저장하는 부분
+        mDBRef.child(me).child("startDay").setValue(startDay)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        java.setStartDate(startDay);
+
+                        json = new Gson().toJson(java);
+                        PreferenceUtil.getInstance(getContext()).setString(PreferenceUtil.MY_INFO, json);
 
 
-            calendar2.set(Calendar.YEAR, dYear);
-            calendar2.set(Calendar.MONTH, dMonth);
-            calendar2.set(Calendar.DATE, dDay);
+                        mSelectStartDay.setText("우리" + "\n" + getDatingPeriod(startDay) + "\n" + "일째 사랑중");
 
-            today = calendar.getTimeInMillis() / (24 * 60 * 60 * 1000);
-            dday = calendar2.getTimeInMillis() / (24 * 60 * 60 * 1000);
-            result = today - dday;
-            resultValue = (int) result + 1;
+                    }
 
-
-            UpdateDday();
-
-        }
-    };
-
-    void UpdateDday() {
-
-        if (resultValue > 0) {
-
-            int absR = Math.abs(resultValue);
-            mDday.setText(String.format("%d", absR));
-
-        }
-
-        else if (resultValue == 0) {
-
-            mDday.setText("1");
-
-        }
-
-        else {
-
-            mDday.setText(String.format("D%d", resultValue));
-
-        }
-
-        PreferenceUtil.getInstance(this.getActivity()).setString(PreferenceUtil.D_DAY, mDday.getText().toString());
+                });
 
     }
 }

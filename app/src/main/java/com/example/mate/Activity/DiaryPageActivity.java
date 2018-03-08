@@ -109,6 +109,7 @@ public class DiaryPageActivity extends Activity {
             mItems.add(vo);
 
 //            adapter = new DiaryPageAdapter(mItems);
+
             mLv_Diary.setAdapter(adapter);
 
             adapter.setData(mItems);
