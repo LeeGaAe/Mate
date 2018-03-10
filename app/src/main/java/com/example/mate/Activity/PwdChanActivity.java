@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 
 import com.example.mate.Activity.Adapter.PwdAdapter;
 import com.example.mate.R;
-
 
 import java.util.ArrayList;
 
@@ -29,7 +27,7 @@ import butterknife.ButterKnife;
  * Created by 가애 on 2017-12-09.
  */
 
-public class PwdSetActivity extends Activity {
+public class PwdChanActivity extends Activity {
 
     private Context mContext;
     private Intent mIntent;
@@ -69,7 +67,7 @@ public class PwdSetActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_set_pwd);
+        setContentView(R.layout.activity_chan_pwd);
 
         ButterKnife.bind(this);
         mContext = this;

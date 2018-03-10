@@ -47,6 +47,8 @@
         <!--<activity android:name=".Activity.SettingActivity" />-->
         <activity android:name=".Activity.PwdPageActivity" />
         <activity android:name=".Activity.PwdSetActivity" />
+        <activity android:name=".Activity.PwdChanActivity" />
+        <activity android:name=".Activity.PwdActivity" />
         <activity android:name=".Activity.ThemeActivity" />
         <activity android:name=".Activity.BackgroundActivity" />
         <activity android:name=".Activity.MyInfoActivity" />

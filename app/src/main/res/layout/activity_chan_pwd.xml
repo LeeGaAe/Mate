@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="암호 입력"
+                android:text="새로운 암호 입력"
                 android:textColor="@color/White"
                 android:textSize="30sp"
                 android:textStyle="bold"/>
@@ -38,7 +38,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="반쪽 암호를 입력해주세요."
+                android:text="반쪽 새로운 암호를 입력해주세요."
                 android:textColor="@color/White"
                 android:textSize="14sp"/>
 
@@ -103,7 +103,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="암호 재 입력"
+                android:text="새로운 암호 재 입력"
                 android:textColor="@color/White"
                 android:textSize="30sp"
                 android:textStyle="bold"/>
@@ -118,7 +118,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="반쪽 암호를 다시 한번 입력해주세요."
+                android:text="반쪽 새로운 암호를 다시 한번 입력해주세요."
                 android:textColor="@color/White"
                 android:textSize="14sp"/>
 

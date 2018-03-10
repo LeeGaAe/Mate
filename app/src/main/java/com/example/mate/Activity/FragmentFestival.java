@@ -10,21 +10,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.example.mate.Activity.Adapter.DiaryPageAdapter;
 import com.example.mate.Activity.Adapter.FestivalAdapter;
-import com.example.mate.Activity.Vo.DiaryVo;
 import com.example.mate.Activity.Vo.FestivalVo;
 import com.example.mate.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,64 +34,74 @@ import butterknife.ButterKnife;
 
 public class FragmentFestival extends Fragment {
 
-    private FirebaseDatabase mDatabase;
-    private DatabaseReference mDBRef;
-
-
-    private RecyclerView mFestivalList;
+    @BindView(R.id.list_festival) RecyclerView mFestivalList;
 
     private FestivalAdapter adapter;
     private ArrayList<FestivalVo> mItems = new ArrayList<>();
-
-    LinearLayoutManager mLayoutManager;
+    private FirebaseFirestore mDBStore;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        ButterKnife.bind(getActivity());
-
         View v = inflater.inflate(R.layout.activity_festival, container, false);
-
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference().child("festival");
-
-        mFestivalList = (RecyclerView) v.findViewById(R.id.list_festival);
-
-        ValueEventListener festival = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (int i =0; i<10; i++) {
-
-                }
-                FestivalVo vo = dataSnapshot.getValue(FestivalVo.class);
-                mItems.add(vo);
-
-                adapter = new FestivalAdapter(mItems);
-
-                mFestivalList.setAdapter(adapter);
-                mFestivalList.setHasFixedSize(true);
-
-                mLayoutManager = new LinearLayoutManager(getActivity());
-                mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                mFestivalList.setLayoutManager(mLayoutManager);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-        };
-
-        mDBRef.addValueEventListener(festival);
-
 
         return v;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ButterKnife.bind(this, view);
+
+        mDBStore = FirebaseFirestore.getInstance();
+
+        setData();
+        setRecyclerView();
+
+
+    }
+
+    private void setRecyclerView(){
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getView().getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mFestivalList.setLayoutManager(layoutManager);
+
+        adapter = new FestivalAdapter(mItems);
+        mFestivalList.setAdapter(adapter);
+
+    }
+
+    private void setData(){
+
+//        for (int i = 0; i <= 10; i++) {
+//
+//            FestivalVo vo = new FestivalVo();
+//            vo.setTitle("어느 멋진 날");
+//            mItems.add(vo);
+//
+//
+//        }
+//
+        mDBStore.collection("Festival")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+
+                                FestivalVo vo = document.toObject(FestivalVo.class);
+                                mItems.add(vo);
+
+                                Log.d("Festival", document.getId() + " => " + document.getData());
+                            }
+                        }
+                    }
+                });
+    }
 
 }

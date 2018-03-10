@@ -58,11 +58,11 @@ public class IntroActivity extends Activity {
 
                 if (mUser == null) { //로그인을 안했을 때
                     mIntent = new Intent(mContext, LoginActivity.class);
-//                    mIntent = new Intent(mContext, FragmentMain.class);
                     startActivity(mIntent);
                     finish();
                 } else { //했을 때
                     mDBRef.addValueEventListener(isPartner);
+
                 }
             }
         }, 2000);
@@ -79,28 +79,33 @@ public class IntroActivity extends Activity {
             SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
 
 
+            String isPwd = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.COMPLETE_PASSWORD, "");
+
             if (java.getPartnerVo() == null) {
                 mIntent = new Intent(mContext, ConnectPartnerActivity.class);
                 startActivity(mIntent);
                 finish();
 
             } else {
-                mIntent = new Intent(mContext, FragmentMain.class);
-                startActivity(mIntent);
-                finish();
-            }
 
-//            if (java.getGroupID()==null) {
-//                mIntent = new Intent(mContext, ConnectPartnerActivity.class);
-//                startActivity(mIntent);
-//                finish();
-//            } else {
-//                Toast.makeText(mContext, "메인으로 가기", Toast.LENGTH_SHORT).show();
-//            }
+                if (!isPwd.equals("")) {
+                    mIntent = new Intent(mContext, PwdActivity.class);
+                    mIntent.putExtra("isIntro","INTRO");
+                    startActivity(mIntent);
+                    finish();
+                } else {
+                    mIntent = new Intent(mContext, FragmentMain.class);
+                    startActivity(mIntent);
+                    finish();
+                }
+            }
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
         }
     };
+
+
+
 }

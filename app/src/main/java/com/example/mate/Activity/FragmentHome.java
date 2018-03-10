@@ -162,11 +162,11 @@ public class FragmentHome extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final String me = user.getUid();
 
-        // 여기부터 수정하면 돼 디비에 저장하는 부분
         mDBRef.child(me).child("startDay").setValue(startDay)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+
                         java.setStartDate(startDay);
 
                         json = new Gson().toJson(java);

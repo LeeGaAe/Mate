@@ -14,10 +14,13 @@ import android.widget.TextView;
 
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 
 import Util.Const;
 import Util.PreferenceUtil;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by 가애 on 2018-03-01.
@@ -27,12 +30,13 @@ public class FragmentSetting extends Fragment {
 
     private Intent mIntent;
 
-    private TextView mMyname;
-    private TextView mMyEmail;
+    @BindView (R.id.my_name) TextView mMyName;
+    @BindView (R.id.my_email) TextView mMyEmail;
 
-    private LinearLayout mBtnSet;
-    private LinearLayout mBtnPwd;
-    private LinearLayout mBtnTheme;
+    @BindView (R.id.more_set) LinearLayout mBtnSet;
+    @BindView (R.id.btn_pwd) LinearLayout mBtnPwd;
+    @BindView (R.id.btn_theme) LinearLayout mBtnTheme;
+
 
     String json;
     SignUpVo java;
@@ -43,31 +47,30 @@ public class FragmentSetting extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.activity_setting, container, false);
 
-        json = PreferenceUtil.getInstance(v.getContext()).getString(PreferenceUtil.MY_INFO, "");
-        java = new Gson().fromJson(json, SignUpVo.class);
-
-
-        init(v);
-
-
-
-
-
-
         return v;
 
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    private void init(View v){
+        ButterKnife.bind(this, view);
 
-        mMyname = (TextView) v.findViewById (R.id.my_name);
-        mMyname.setText(java.getNickname());
+        json = PreferenceUtil.getInstance(getActivity()).getString(PreferenceUtil.MY_INFO, "");
+        java = new Gson().fromJson(json, SignUpVo.class);
 
-        mMyEmail = (TextView) v.findViewById (R.id.my_email);
+
+        init();
+
+    }
+
+
+    private void init(){
+
+        mMyName.setText(java.getNickname());
         mMyEmail.setText(java.getEmail());
 
-        mBtnSet = (LinearLayout) v.findViewById(R.id.more_set);
         mBtnSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,17 +79,21 @@ public class FragmentSetting extends Fragment {
             }
         });
 
-        mBtnPwd = (LinearLayout) v.findViewById(R.id.btn_pwd);
         mBtnPwd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mIntent = new Intent(getActivity(), PwdPageActivity.class);
-                startActivity(mIntent);
+
+                if (PreferenceUtil.getInstance(v.getContext()).getString(PreferenceUtil.COMPLETE_PASSWORD, null) != null){
+                    mIntent = new Intent(getActivity(),PwdActivity.class);
+                    mIntent.putExtra("isIntro" , "NO_INTRO");
+                    startActivity(mIntent);
+                }else{
+                    mIntent = new Intent(getActivity(), PwdPageActivity.class);
+                    startActivity(mIntent);
+                }
             }
         });
 
-
-        mBtnTheme = (LinearLayout) v.findViewById(R.id.btn_theme);
         mBtnTheme.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,5 +103,4 @@ public class FragmentSetting extends Fragment {
         });
 
     }
-
 }

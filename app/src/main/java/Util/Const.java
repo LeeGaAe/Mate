@@ -43,4 +43,6 @@ public class Const {
 
     final static public int REQUEST_REMOVE_DIARY = 1234;
     final static public int RESULT_REMOVE_DIARY = 4321;
+
+    final static public int REQUEST_COMPLETE_PASSWORD = 9;
 }

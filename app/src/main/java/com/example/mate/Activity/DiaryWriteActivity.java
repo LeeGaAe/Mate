@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -204,21 +205,21 @@ public class DiaryWriteActivity extends Activity {
         dialog.setPositiveButton("갤러리", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(mContext, "갤러리", Toast.LENGTH_SHORT).show();
+                doTakePictureAlbum();
             }
         });
 
         dialog.setNegativeButton("카메라", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(mContext, "카메라", Toast.LENGTH_SHORT).show();
+                doTakePictureCamera();
             }
         });
 
         dialog.setNeutralButton("취소", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(mContext, "취소", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
             }
         });
 
@@ -239,8 +240,17 @@ public class DiaryWriteActivity extends Activity {
             ActivityCompat.requestPermissions(DiaryWriteActivity.this, new String[]{android.Manifest.permission.CAMERA}, Const.REQUEST_PERMISSION_CAMERA);
 
         } else {
+
             mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+            String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+            mImageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
+
+            mIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
             startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
+
+//            mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//            startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
         }
 
 //        mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -269,11 +279,6 @@ public class DiaryWriteActivity extends Activity {
             startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
         }
 
-//        mIntent = new Intent(Intent.ACTION_PICK);
-//        mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-//        mIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); //여러장 선택
-//        mIntent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
     }
 
     @Override
@@ -283,17 +288,30 @@ public class DiaryWriteActivity extends Activity {
         switch (requestCode) {
             case Const.REQUEST_PERMISSION_CAMERA:
                 if (grantResults[0] == 0) {
-                    Toast.makeText(mContext, "카메라승인", Toast.LENGTH_SHORT).show();
+
+                    mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+                    mImageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
+
+                    mIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+                    startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
+
                 } else {
-                    Toast.makeText(mContext, "카메라승인거절", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 break;
 
             case Const.REQUEST_PERMISSION_ALBUM:
                 if (grantResults[0] == 0) {
-                    Toast.makeText(mContext, "갤러리승인", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(mContext, "갤러리승인거절", Toast.LENGTH_SHORT).show();
+
+                    mIntent = new Intent(Intent.ACTION_PICK);
+                    mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+                    startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
+                }
+
+                else {
+                    finish();
                 }
                 break;
 
@@ -329,12 +347,17 @@ public class DiaryWriteActivity extends Activity {
 
             case Const.CROP_PICTURE:
 
+                if ( resultCode != Activity.RESULT_OK) {
+                    return;
+                }
+
                 final Bundle extra = data.getExtras();
                 String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BanDiaryImage/" + System.currentTimeMillis() + ".jpg";
 
                 if (extra != null) {
                     Bitmap photo = extra.getParcelable("data");
                     mImage.setImageBitmap(photo);
+
 
                     break;
                 }

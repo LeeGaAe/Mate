@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mate.Activity.Adapter.DiaryPageAdapter;
 import com.example.mate.Activity.Vo.DiaryVo;
@@ -36,35 +35,24 @@ import butterknife.ButterKnife;
 
 public class DiaryPageActivity extends Activity {
 
-    //    private Context mContext;
+    private Context mContext;
     private Intent mIntent;
-
-    public static Context mContext;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
 
-    @BindView(R.id.top_area)
-    LinearLayout mTopArea;
+    @BindView(R.id.top_area) LinearLayout mTopArea;
+    @BindView(R.id.btn_back) LinearLayout mBtnBack;
+    @BindView(R.id.btn_add) LinearLayout mBtnAdd;
+    @BindView(R.id.list_diary) RecyclerView mLv_Diary;
 
-    @BindView(R.id.btn_back)
-    LinearLayout mBtnBack;
-
-    @BindView(R.id.btn_add)
-    LinearLayout mBtnAdd;
-
-    @BindView(R.id.list_diary)
-    RecyclerView mLv_Diary;
-
-    @BindView(R.id.null_diary)
-    TextView mDiaryNull;
+//    @BindView(R.id.null_diary) TextView mDiaryNull;
 
     private DiaryPageAdapter adapter;
     private ArrayList<DiaryVo> mItems = new ArrayList<>();
 
     private String ThemeColor;
     LinearLayoutManager mLayoutManager;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,18 +92,25 @@ public class DiaryPageActivity extends Activity {
     ChildEventListener newDiary = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
             DiaryVo vo = dataSnapshot.getValue(DiaryVo.class);
             mItems.add(vo);
 
-//            adapter = new DiaryPageAdapter(mItems);
+            if (adapter == null) {
+                adapter = new DiaryPageAdapter(mItems);
+                mLv_Diary.setAdapter(adapter);
+            }
 
-            mLv_Diary.setAdapter(adapter);
+            else {
+                adapter.setData(mItems);
+                if (mItems.size() > 0) {
 
-            adapter.setData(mItems);
-            adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
+                }
+
+            }
 
             mLv_Diary.setHasFixedSize(true);
+
 
             mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             mLayoutManager.setReverseLayout(true);
@@ -127,11 +122,15 @@ public class DiaryPageActivity extends Activity {
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
+            adapter.setData(mItems);
+            adapter.notifyDataSetChanged();
+
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
 
+            adapter.setData(mItems);
             adapter.notifyDataSetChanged();
 
         }

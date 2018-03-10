@@ -13,11 +13,14 @@ public final class PreferenceUtil {
     private static PreferenceUtil instance;
     private final SharedPreferences mSharedPreferences;
 
-    final static public String FIRST_RUN_CHECK = "isFirstRun";
+//    final static public String FIRST_RUN_CHECK = "isFirstRun";
     final static public String APP_THEME_COLOR = "isThemeColor";
     final static public String MY_INFO = "MyInfo";
-    final static public String D_DAY = "D_day";
-    final static public String SELECT_D_DAY = "S_D_day";
+    final static public String PASSWORD = "Password";
+    final static public String COMPLETE_PASSWORD = "C_Password";
+
+//    final static public String D_DAY = "D_day";
+//    final static public String SELECT_D_DAY = "S_D_day";
 
 
     public PreferenceUtil(Context context) {

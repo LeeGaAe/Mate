@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,6 +17,14 @@ import android.widget.Toast;
 
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import Util.Const;
@@ -31,6 +40,9 @@ public class MyInfoActivity extends Activity {
 
     private Context mContext;
     private Intent mIntent;
+
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDBRef;
 
     @BindView(R.id.btn_back)
     LinearLayout mBtnBack;
@@ -50,14 +62,20 @@ public class MyInfoActivity extends Activity {
     @BindView(R.id.edit_name)
     EditText mEditName;
 
+    @BindView(R.id.birth)
+    TextView mMyBirth;
+
+    @BindView(R.id.gender)
+    TextView mMyGender;
+
     @BindView(R.id.btn_edit_name)
     ImageView mBtnEditName;
 
     @BindView(R.id.btn_complete)
     ImageView mBtnComplete;
 
-//    @BindView(R.id.btn_disconnect)
-//    LinearLayout mBtnDisconnect;
+    @BindView(R.id.btn_disconnect)
+    LinearLayout mBtnDisconnect;
 
 
     String json;
@@ -71,6 +89,9 @@ public class MyInfoActivity extends Activity {
 
         ButterKnife.bind(this);
         mContext = this;
+
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference("user");
 
         String ThemeColor = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.APP_THEME_COLOR, Const.APP_THEME_COLORS[0]);
         mTopArea.setBackgroundColor(Color.parseColor(ThemeColor));
@@ -99,9 +120,7 @@ public class MyInfoActivity extends Activity {
     }
 
 
-
-
-    private void init(){
+    private void init() {
 
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +131,7 @@ public class MyInfoActivity extends Activity {
         mBtnCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext,"수정되었습니다.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "수정되었습니다.", Toast.LENGTH_SHORT).show();
                 onBackPressed();
             }
         });
@@ -127,6 +146,13 @@ public class MyInfoActivity extends Activity {
         mBtnEditName.setVisibility(View.VISIBLE);
         mBtnComplete.setVisibility(View.GONE);
 
+        mMyBirth.setText(java.getBirth());
+
+        if (java.getGender().equals("M")) {
+            mMyGender.setText("남자");
+        } else {
+            mMyGender.setText("여자");
+        }
 
 
         mBtnEditName.setOnClickListener(new View.OnClickListener() {
@@ -142,17 +168,33 @@ public class MyInfoActivity extends Activity {
             }
         });
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final String me = user.getUid();
+
         mBtnComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 mMyName.setText(mEditName.getText().toString());
 
+                mDBRef.child(me).child("nickname").setValue(mMyName.getText().toString())
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                java.setNickname(mMyName.getText().toString());
+
+                                json = new Gson().toJson(java);
+                                PreferenceUtil.getInstance(getApplicationContext()).setString(PreferenceUtil.MY_INFO, json);
+                                Log.d("lga", "json" + json);
+                            }
+                        });
+
                 mMyName.setVisibility(View.VISIBLE);
                 mEditName.setVisibility(View.GONE);
 
                 mBtnEditName.setVisibility(View.VISIBLE);
                 mBtnComplete.setVisibility(View.GONE);
+
 
             }
         });

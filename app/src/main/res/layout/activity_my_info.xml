@@ -80,9 +80,9 @@
     </LinearLayout>
 
     <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="1dp"-->
-        <!--android:background="@color/Bold_Gray" />-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="1dp"-->
+    <!--android:background="@color/Bold_Gray" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -106,9 +106,9 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
                         android:orientation="vertical">
 
                         <ImageView
@@ -137,7 +137,7 @@
                                     android:gravity="center_horizontal"
                                     android:text="내 애칭"
                                     android:textSize="17dp"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone" />
 
                                 <EditText
                                     android:id="@+id/edit_name"
@@ -145,7 +145,7 @@
                                     android:layout_height="wrap_content"
                                     android:gravity="center_horizontal"
                                     android:textSize="17dp"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone" />
 
                                 <ImageView
                                     android:id="@+id/btn_edit_name"
@@ -153,7 +153,7 @@
                                     android:layout_height="20dp"
                                     android:layout_marginLeft="10dp"
                                     android:src="@drawable/pen"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone" />
 
                                 <ImageView
                                     android:id="@+id/btn_complete"
@@ -161,16 +161,16 @@
                                     android:layout_height="20dp"
                                     android:layout_marginLeft="10dp"
                                     android:src="@drawable/selector_access_chk"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone" />
 
                             </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:layout_marginTop="5dp"
                                 android:layout_marginBottom="5dp"
+                                android:layout_marginTop="5dp"
+                                android:gravity="center"
                                 android:orientation="horizontal">
 
                                 <TextView
@@ -205,11 +205,11 @@
                             android:textSize="14dp" />
 
                         <TextView
+                            android:id="@+id/birth"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="15dp"
                             android:gravity="right"
-                            android:text="OOOO년 OO월 OO일"
                             android:textSize="14dp" />
 
 
@@ -235,11 +235,11 @@
                             android:textSize="14dp" />
 
                         <TextView
+                            android:id="@+id/gender"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="15dp"
                             android:gravity="right"
-                            android:text="여자"
                             android:textSize="14dp" />
 
 
@@ -303,58 +303,58 @@
                         android:layout_width="match_parent"
                         android:layout_height="40dp" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/Gray" />
+                    <!--<View-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="1dp"-->
+                    <!--android:background="@color/Gray" />-->
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="55dp"
-                        android:background="@color/DeepPink"
-                        android:gravity="center">
+                    <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="55dp"-->
+                    <!--android:background="@color/DeepPink"-->
+                    <!--android:gravity="center">-->
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="15dp"
-                            android:text="상대방과 연결끊기"
-                            android:textColor="@color/White"
-                            android:textSize="14dp" />
+                    <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginLeft="15dp"-->
+                    <!--android:text="상대방과 연결끊기"-->
+                    <!--android:textColor="@color/White"-->
+                    <!--android:textSize="14dp" />-->
 
-                    </LinearLayout>
+                    <!--</LinearLayout>-->
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/Gray" />
+                    <!--<View-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="1dp"-->
+                    <!--android:background="@color/Gray" />-->
 
                 </LinearLayout>
             </FrameLayout>
         </ScrollView>
     </LinearLayout>
 
-    <!--<LinearLayout-->
-    <!--android:id="@+id/btn_disconnect"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:layout_weight="0.8"-->
-    <!--android:background="@color/DeepPink"-->
-    <!--android:gravity="center">-->
+    <LinearLayout
+        android:id="@+id/btn_disconnect"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:background="@color/DeepPink"
+        android:gravity="center">
 
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:gravity="center"-->
-    <!--android:text="@string/disconnect"-->
-    <!--android:textColor="@color/White"-->
-    <!--android:textSize="18dp" />-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/disconnect"
+            android:textColor="@color/White"
+            android:textSize="18dp" />
 
-    <!--</LinearLayout>-->
+    </LinearLayout>
 
-    <!--<View-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="1dp"-->
-    <!--android:background="@color/Bold_Gray" />-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/Bold_Gray" />
 
 </LinearLayout>

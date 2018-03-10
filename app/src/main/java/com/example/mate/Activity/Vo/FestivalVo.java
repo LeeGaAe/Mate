@@ -1,9 +1,12 @@
 package com.example.mate.Activity.Vo;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 /**
  * Created by 가애 on 2018-01-25.
  */
 
+@IgnoreExtraProperties
 public class FestivalVo {
 
     public String title;
