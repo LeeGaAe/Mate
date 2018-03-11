@@ -138,7 +138,6 @@ public class SignUpActivity extends Activity {
                     Toast.makeText(mContext, "아이디를 입력해주세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     mDBRef.child("user").addListenerForSingleValueEvent(mIdChkListener);
-//                    Toast.makeText(mContext, "왜안됨", Toast.LENGTH_SHORT).show();
                 }
             }
         });

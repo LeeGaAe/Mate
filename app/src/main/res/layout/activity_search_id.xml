@@ -89,11 +89,12 @@
             android:orientation="vertical">
 
             <EditText
+                android:id="@+id/nickname"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/round"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/corner_round"
                 android:gravity="center"
                 android:hint="@string/nickname"
                 android:inputType="textPersonName"
@@ -107,22 +108,23 @@
                 android:id="@+id/btn_birth"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/round"
+                android:background="@drawable/corner_round"
                 android:text="@string/birth"
                 android:textColor="@color/Bold_Gray"
                 android:textSize="15dp" />
 
 
             <EditText
+                android:id="@+id/phone"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/round"
+                android:background="@drawable/corner_round"
                 android:gravity="center"
                 android:hint="@string/phone_num"
                 android:inputType="phone"
@@ -172,14 +174,13 @@
                 android:id="@+id/txt_find_user_id"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:text="ID"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:textSize="15dp"
                 android:textColor="@color/Bold_Gray"
-                android:background="@drawable/round" />
+                android:background="@drawable/corner_round" />
 
         </LinearLayout>
     </LinearLayout>
