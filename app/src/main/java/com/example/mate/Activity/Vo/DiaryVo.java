@@ -8,11 +8,12 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class DiaryVo {
 
-    private String postingId;
-    private String writerId;
-    private String title;
-    private String content;
-    private String date;
+    public String postingId;
+    public String writerId;
+    public String title;
+    public String content;
+    public String date;
+    public String groupID;
 
     public DiaryVo(){
 
@@ -58,4 +59,11 @@ public class DiaryVo {
         this.content = content;
     }
 
+    public String getGroupID() {
+        return groupID;
+    }
+
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
+    }
 }

@@ -16,7 +16,6 @@ public class SignUpVo {
     public String birth;
     public String phone_num;
     public PartnerVo partnerVo;
-    public String connectYN;
     public String groupID;
     public String startDate;
 
@@ -78,14 +77,6 @@ public class SignUpVo {
 
     public void setPartnerVo(PartnerVo partnerVo) {
         this.partnerVo = partnerVo;
-    }
-
-    public String getConnectYN() {
-        return connectYN;
-    }
-
-    public void setConnectYN(String connectYN) {
-        this.connectYN = connectYN;
     }
 
     public String getGroupID() {

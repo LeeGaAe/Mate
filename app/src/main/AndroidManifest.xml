@@ -28,7 +28,7 @@
         <!--<activity android:name=".Activity.MainActivity" />-->
         <activity android:name=".Activity.FragmentMain" />
 
-        <activity android:name=".Activity.MenuActivity" />
+        <!--<activity android:name=".Activity.MenuActivity" />-->
         <activity android:name=".Activity.DiaryPageActivity" />
         <activity android:name=".Activity.DiaryDetailActivity" />
         <activity
@@ -62,7 +62,13 @@
         <activity
             android:name=".Activity.PartnerInfoDialog"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo.Light.Dialog" />
+            android:theme="@android:style/Theme.Holo.Light.Dialog">
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
 
         <service android:name=".Activity.Firebase.FirebaseMessagingService">
             <intent-filter>
@@ -84,8 +90,10 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <!--<uses-permission android:name="android.permission.CAMERA2" />-->
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+
+    <!--전화와 메시지를 보내기 위한 퍼미션-->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
 </manifest>

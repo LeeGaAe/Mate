@@ -1,5 +1,6 @@
 package com.example.mate.Activity.Adapter;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,6 @@ public class FestivalAdapter extends RecyclerView.Adapter<FestivalAdapter.ItemVi
         holder.mPeriod.setText(mItems.get(position).getPeriod());
         holder.mPlace.setText(mItems.get(position).getPlace());
         holder.mTime.setText(mItems.get(position).getTime());
-//        holder.mBtnAdd.setText(mItems.get(position).getTitle());
 
     }
 
@@ -62,7 +62,6 @@ public class FestivalAdapter extends RecyclerView.Adapter<FestivalAdapter.ItemVi
             mPeriod = (TextView) itemView.findViewById(R.id.festival_period);
             mPlace = (TextView) itemView.findViewById(R.id.festival_place);
             mTime = (TextView) itemView.findViewById(R.id.festival_time);
-            mBtnAdd = (ImageView) itemView.findViewById(R.id.btn_add);
         }
     }
 }

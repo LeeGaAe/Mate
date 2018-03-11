@@ -1,7 +1,9 @@
 package com.example.mate.Activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,7 +13,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,11 +21,8 @@ import com.example.mate.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import Util.Const;
@@ -200,4 +198,32 @@ public class MyInfoActivity extends Activity {
         });
 
     }
+
+//    public void logOut() {
+//
+//        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext,R.style.MyAlertDialogStyle);
+//
+//        dialog.setTitle("로그아웃");
+//        dialog.setMessage("로그아웃을 하시겠습니까?");
+//        dialog.setCancelable(false);
+//
+//        dialog.setPositiveButton("취소", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        dialog.setNegativeButton("로그아웃", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                mIntent = new Intent(mContext, LoginActivity.class);
+//                mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(mIntent);
+//            }
+//        });
+//
+//        AlertDialog alertDialog = dialog.create();
+//        alertDialog.show();
+//    }
 }

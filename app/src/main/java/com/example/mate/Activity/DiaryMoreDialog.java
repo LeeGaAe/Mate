@@ -51,10 +51,6 @@ public class DiaryMoreDialog extends Activity {
     @BindView(R.id.postingId)
     TextView mPostingId;
 
-//    private DiaryPageAdapter adapter;
-//    private ArrayList<DiaryVo> mItems = new ArrayList<>();
-
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,7 +105,6 @@ public class DiaryMoreDialog extends Activity {
 
                 Toast.makeText(mContext, "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
-//                setResult(Const.RESULT_REMOVE_DIARY);
                 finish();
 
             }

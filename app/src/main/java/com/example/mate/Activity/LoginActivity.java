@@ -33,9 +33,6 @@ import Util.PreferenceUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 /**
  * Created by 가애 on 2017-12-05.
  */

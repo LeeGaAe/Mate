@@ -44,10 +44,7 @@ public class FragmentFestival extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        View v = inflater.inflate(R.layout.activity_festival, container, false);
-
-        return v;
+        return inflater.inflate(R.layout.activity_festival, container, false);
     }
 
     @Override
@@ -59,49 +56,44 @@ public class FragmentFestival extends Fragment {
         mDBStore = FirebaseFirestore.getInstance();
 
         setData();
-        setRecyclerView();
 
 
     }
 
-    private void setRecyclerView(){
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getView().getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mFestivalList.setLayoutManager(layoutManager);
-
-        adapter = new FestivalAdapter(mItems);
-        mFestivalList.setAdapter(adapter);
-
-    }
 
     private void setData(){
 
-//        for (int i = 0; i <= 10; i++) {
-//
-//            FestivalVo vo = new FestivalVo();
-//            vo.setTitle("어느 멋진 날");
-//            mItems.add(vo);
-//
-//
-//        }
-//
         mDBStore.collection("Festival")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+
                             for (DocumentSnapshot document : task.getResult()) {
 
                                 FestivalVo vo = document.toObject(FestivalVo.class);
                                 mItems.add(vo);
 
-                                Log.d("Festival", document.getId() + " => " + document.getData());
+                                setRecyclerView();
                             }
                         }
                     }
                 });
+    }
+
+
+
+    private void setRecyclerView(){
+
+        adapter = new FestivalAdapter(mItems);
+        mFestivalList.setAdapter(adapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getView().getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mFestivalList.setLayoutManager(layoutManager);
+
     }
 
 }

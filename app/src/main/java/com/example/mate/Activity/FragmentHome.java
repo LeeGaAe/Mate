@@ -19,8 +19,11 @@ import com.example.mate.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.Calendar;
@@ -42,17 +45,17 @@ public class FragmentHome extends Fragment {
     @BindView(R.id.my_name) TextView mMyName;
     @BindView(R.id.partner_name) TextView mPartName;
     @BindView(R.id.txt_select_start_day) TextView mSelectStartDay;
-
     @BindView(R.id.btn_diary) ImageView mDiary;
-
     @BindView(R.id.partner_profile) LinearLayout mPartProfile;
     @BindView(R.id.btn_date_picker) LinearLayout mBtnDatePicker;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
+    private FirebaseUser mUser;
 
     String json;
     SignUpVo java;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,7 +66,6 @@ public class FragmentHome extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         ButterKnife.bind(this, view);
 
         json = PreferenceUtil.getInstance(getActivity()).getString(PreferenceUtil.MY_INFO, "");
@@ -71,17 +73,20 @@ public class FragmentHome extends Fragment {
 
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference().child("user");
-
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
 
         init();
 
     }
+
+
 
     private void init() {
 
         if(!TextUtils.isEmpty(java.getStartDate())){
 
             mSelectStartDay.setText("우리" + "\n" + getDatingPeriod(java.getStartDate()) + "\n" + "일째 사랑중");
+
         }
 
         mMyName.setText(java.getNickname());
@@ -110,6 +115,9 @@ public class FragmentHome extends Fragment {
             }
         });
     }
+
+
+
 
     private String getDatingPeriod(String startDate) {
 
@@ -159,8 +167,7 @@ public class FragmentHome extends Fragment {
 
     private void updateInfo(final String startDay) {
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String me = user.getUid();
+        String me = mUser.getUid();
 
         mDBRef.child(me).child("startDay").setValue(startDay)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -174,10 +181,10 @@ public class FragmentHome extends Fragment {
 
 
                         mSelectStartDay.setText("우리" + "\n" + getDatingPeriod(startDay) + "\n" + "일째 사랑중");
-
                     }
 
                 });
 
     }
+
 }

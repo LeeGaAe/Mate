@@ -1,9 +1,12 @@
 package com.example.mate.Activity.Vo;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
 /**
  * Created by 가애 on 2017-12-22.
  */
 
+@IgnoreExtraProperties
 public class ChatVo {
 
     public String key;
@@ -11,6 +14,7 @@ public class ChatVo {
     public String message;
     public String email;
     public String date;
+    public String groupId;
     public long time;
 
     public ChatVo() {
@@ -63,5 +67,13 @@ public class ChatVo {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }

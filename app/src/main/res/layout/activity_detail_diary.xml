@@ -74,7 +74,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_more"/>
+                    android:background="@drawable/btn_more" />
 
             </LinearLayout>
         </LinearLayout>
@@ -108,7 +108,7 @@
                 android:gravity="center_vertical|right"
                 android:textColor="@color/Black"
                 android:textSize="15dp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -128,10 +128,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
                     <ImageView
                         android:id="@+id/img"
@@ -141,17 +140,23 @@
                         android:layout_marginRight="10dp"
                         android:visibility="gone" />
 
-                    <TextView
-                        android:id="@+id/diary_content"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@null"
-                        android:textColor="@color/Black"
-                        android:textSize="14dp" />
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/diary_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@null"
+                            android:textColor="@color/Black"
+                            android:textSize="14dp" />
+                    </LinearLayout>
+                </FrameLayout>
             </ScrollView>
         </LinearLayout>
     </LinearLayout>

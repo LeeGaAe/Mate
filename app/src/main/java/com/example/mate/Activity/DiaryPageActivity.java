@@ -13,14 +13,19 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.mate.Activity.Adapter.ChatAdapter;
 import com.example.mate.Activity.Adapter.DiaryPageAdapter;
+import com.example.mate.Activity.Vo.ChatVo;
 import com.example.mate.Activity.Vo.DiaryVo;
 import com.example.mate.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -40,18 +45,23 @@ public class DiaryPageActivity extends Activity {
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
+    private FirebaseUser mUser;
 
-    @BindView(R.id.top_area) LinearLayout mTopArea;
-    @BindView(R.id.btn_back) LinearLayout mBtnBack;
-    @BindView(R.id.btn_add) LinearLayout mBtnAdd;
-    @BindView(R.id.list_diary) RecyclerView mLv_Diary;
-
-//    @BindView(R.id.null_diary) TextView mDiaryNull;
+    @BindView(R.id.top_area)
+    LinearLayout mTopArea;
+    @BindView(R.id.btn_back)
+    LinearLayout mBtnBack;
+    @BindView(R.id.btn_add)
+    LinearLayout mBtnAdd;
+    @BindView(R.id.list_diary)
+    RecyclerView mLv_Diary;
 
     private DiaryPageAdapter adapter;
     private ArrayList<DiaryVo> mItems = new ArrayList<>();
 
     private String ThemeColor;
+    private String GroupID;
+
     LinearLayoutManager mLayoutManager;
 
     @Override
@@ -62,10 +72,17 @@ public class DiaryPageActivity extends Activity {
         ButterKnife.bind(this);
         mContext = this;
 
-        mIntent = getIntent();
-
         mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference().child("diary");
+        mDBRef = mDatabase.getReference();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        search();
+
+        init();
+        initFireBase();
+    }
+
+    private void init() {
 
         ThemeColor = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.APP_THEME_COLOR, Const.APP_THEME_COLORS[0]);
         mTopArea.setBackgroundColor(Color.parseColor(ThemeColor));
@@ -85,65 +102,71 @@ public class DiaryPageActivity extends Activity {
             }
         });
 
-        mLayoutManager = new LinearLayoutManager(this);
-        mDBRef.addChildEventListener(newDiary);
     }
 
-    ChildEventListener newDiary = new ChildEventListener() {
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            DiaryVo vo = dataSnapshot.getValue(DiaryVo.class);
-            mItems.add(vo);
+    private void initFireBase() {
 
-            if (adapter == null) {
-                adapter = new DiaryPageAdapter(mItems);
-                mLv_Diary.setAdapter(adapter);
-            }
+        mDBRef.child("diary").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-            else {
-                adapter.setData(mItems);
-                if (mItems.size() > 0) {
+                DiaryVo vo = dataSnapshot.getValue(DiaryVo.class);
 
-                    adapter.notifyDataSetChanged();
+                if (vo.getGroupID().equals(GroupID)) {
+
+                    mItems.add(vo);
+
+                    adapter = new DiaryPageAdapter(mItems);
+//                    adapter.setData(mItems);
+
+                    mLv_Diary.setAdapter(adapter);
+                    mLv_Diary.setHasFixedSize(true);
+
+                    mLayoutManager = new LinearLayoutManager(mContext);
+                    mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                    mLayoutManager.setReverseLayout(true);
+                    mLayoutManager.setStackFromEnd(true);
+                    mLv_Diary.setLayoutManager(mLayoutManager);
+
                 }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                finish();
 
             }
 
-            mLv_Diary.setHasFixedSize(true);
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 
-            mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            mLayoutManager.setReverseLayout(true);
-            mLayoutManager.setStackFromEnd(true);
-            mLv_Diary.setLayoutManager(mLayoutManager);
+    private void search() {
 
-        }
+        DatabaseReference group = mDBRef.child("user").child(mUser.getUid()).child("groupId");
+        group.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GroupID = dataSnapshot.getValue().toString();
+            }
 
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-            adapter.setData(mItems);
-            adapter.notifyDataSetChanged();
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            adapter.setData(mItems);
-            adapter.notifyDataSetChanged();
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-
-    };
+            }
+        });
+    }
 }

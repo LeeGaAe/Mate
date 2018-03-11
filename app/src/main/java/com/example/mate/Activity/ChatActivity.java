@@ -11,12 +11,14 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.example.mate.Activity.Adapter.ChatAdapter;
 import com.example.mate.Activity.Vo.ChatVo;
+import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,6 +27,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -44,6 +48,8 @@ public class ChatActivity extends Activity {
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
+    private FirebaseUser mUser;
+
     private ChildEventListener mChildEventListener;
 
     @BindView(R.id.top_area)
@@ -69,6 +75,9 @@ public class ChatActivity extends Activity {
     private ArrayList<ChatVo> mItems = new ArrayList<>();
 
     String email;
+    String json;
+    SignUpVo java;
+    String groupID;
 
     LinearLayoutManager mLayoutManager;
 
@@ -79,13 +88,25 @@ public class ChatActivity extends Activity {
         ButterKnife.bind(this);
         mContext = this;
 
-        mIntent = getIntent();
-
-        initFireBase();
+        mDatabase = FirebaseDatabase.getInstance();
+        mDBRef = mDatabase.getReference();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        email = mUser.getEmail();
 
         String ThemeColor = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.APP_THEME_COLOR, Const.APP_THEME_COLORS[0]);
         mTopArea.setBackgroundColor(Color.parseColor(ThemeColor));
 
+        json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
+        java = new Gson().fromJson(json, SignUpVo.class);
+
+
+        search();
+        init();
+        initFireBase();
+
+    }
+
+    private void init() {
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,44 +123,41 @@ public class ChatActivity extends Activity {
                 long time = System.currentTimeMillis();
 
                 if (!TextUtils.isEmpty(message)) {
-
                     ChatVo vo = new ChatVo();
                     vo.setMessage(mEditChat.getText().toString());
                     vo.setTime(time);
                     vo.setEmail(email);
-                    mDBRef.push().setValue(vo);
-
+                    vo.setGroupId(groupID);
+                    mDBRef.child("chat").push().setValue(vo);
                 }
                 mEditChat.setText("");
             }
         });
-        mLayoutManager = new LinearLayoutManager(this);
+
+
     }
 
     private void initFireBase() {
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference("chat");
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            email = user.getEmail();
-        }
 
-        mChildEventListener = new ChildEventListener() {
+        mDBRef.child("chat").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ChatVo vo = dataSnapshot.getValue(ChatVo.class);
-                mItems.add(vo);
 
-                adapter = new ChatAdapter(mItems,email);
-                mChatting.setAdapter(adapter);
-                mChatting.scrollToPosition(mItems.size() - 1);
+                    ChatVo vo = dataSnapshot.getValue(ChatVo.class);
 
-                mChatting.setHasFixedSize(true);
+                    if (vo.getGroupId().equals(groupID)) {
+                        mItems.add(vo);
 
-                mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                mChatting.setLayoutManager(mLayoutManager);
+                        adapter = new ChatAdapter(mItems, email);
+                        mChatting.setAdapter(adapter);
+                        mChatting.scrollToPosition(mItems.size() - 1);
 
-            }
+                        mChatting.setHasFixedSize(true);
+                        mLayoutManager = new LinearLayoutManager(mContext);
+                        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        mChatting.setLayoutManager(mLayoutManager);
+                    }
+                }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
@@ -160,9 +178,23 @@ public class ChatActivity extends Activity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        };
+        });
+    }
 
-        mDBRef.addChildEventListener(mChildEventListener);
+    private void search() {
+
+        DatabaseReference group = mDBRef.child("user").child(mUser.getUid()).child("groupId");
+        group.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                groupID = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     TextWatcher textWatcher = new TextWatcher() {
