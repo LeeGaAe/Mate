@@ -132,7 +132,7 @@
                         android:gravity="center_vertical">
 
                         <LinearLayout
-                            android:id="@+id/boy"
+                            android:id="@+id/my_profile"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
@@ -141,7 +141,7 @@
 
 
                             <ImageView
-                                android:id="@+id/my_profile"
+                                android:id="@+id/my_pic"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/user" />
@@ -172,9 +172,10 @@
 
 
                             <ImageView
+                                android:id="@+id/partner_pic"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:background="@drawable/user" />
+                                android:src="@drawable/user" />
 
                             <TextView
                                 android:id="@+id/partner_name"

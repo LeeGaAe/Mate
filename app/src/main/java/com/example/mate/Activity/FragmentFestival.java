@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.mate.Activity.Adapter.FestivalAdapter;
 import com.example.mate.Activity.Vo.FestivalVo;
 import com.example.mate.R;
@@ -40,6 +42,7 @@ public class FragmentFestival extends Fragment {
     private ArrayList<FestivalVo> mItems = new ArrayList<>();
     private FirebaseFirestore mDBStore;
 
+//    @BindView(R.id.loading) ImageView mLoading;
 
     @Nullable
     @Override
@@ -53,6 +56,7 @@ public class FragmentFestival extends Fragment {
 
         ButterKnife.bind(this, view);
 
+//        Glide.with(getContext()).load(R.raw.loading).into(mLoading);
         mDBStore = FirebaseFirestore.getInstance();
 
         setData();
@@ -90,7 +94,7 @@ public class FragmentFestival extends Fragment {
         adapter = new FestivalAdapter(mItems);
         mFestivalList.setAdapter(adapter);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getView().getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mFestivalList.setLayoutManager(layoutManager);
 

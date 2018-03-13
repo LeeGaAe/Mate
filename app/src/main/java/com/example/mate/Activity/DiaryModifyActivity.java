@@ -17,11 +17,14 @@ import android.widget.Toast;
 import com.example.mate.Activity.Vo.DiaryVo;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.Calendar;
@@ -40,10 +43,11 @@ public class DiaryModifyActivity extends Activity {
     private Context mContext;
     private Intent mIntent;
 
-//    private Uri mImageUri;
+    //    private Uri mImageUri;
 //
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
+    private FirebaseUser mUser;
 
     @BindView(R.id.top_area)
     LinearLayout mTopArea;
@@ -75,9 +79,13 @@ public class DiaryModifyActivity extends Activity {
 //    @BindView(R.id.ll)
 //    LinearLayout mll;
 
+
     private int mYear, mMonth, mDay;
     private String ThemeColor;
     private InputMethodManager imm;
+
+    String GroupID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +98,10 @@ public class DiaryModifyActivity extends Activity {
         mIntent = getIntent();
 
         mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference().child("diary");
+        mDBRef = mDatabase.getReference();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        search();
 
         mPostingId.setText(mIntent.getStringExtra("postingId"));
 
@@ -120,6 +131,8 @@ public class DiaryModifyActivity extends Activity {
             @Override
             public void onClick(View v) {
 
+
+
                 String postingId = mPostingId.getText().toString();
 
                 String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
@@ -131,31 +144,37 @@ public class DiaryModifyActivity extends Activity {
                 vo.setContent(mEditContent.getText().toString());
                 vo.setDate(mDiaryDate.getText().toString());
                 vo.setWriterId(java.getNickname());
+                vo.setGroupID(GroupID);
 
-                mDBRef.child(postingId).setValue(vo);
+                mDBRef.child("diary").child(postingId).setValue(vo);
                 Toast.makeText(mContext, "완료되었습니다.", Toast.LENGTH_SHORT).show();
 
-//                mIntent = new Intent(mContext, DiaryPageActivity.class);
-//                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(mIntent);
-//                finish();
-                onBackPressed();
+                mIntent = new Intent(mContext, DiaryPageActivity.class);
+                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(mIntent);
+                finish();
+
+
             }
         });
 
-        mDBRef.addChildEventListener(diary);
+        mDBRef.child("diary").addChildEventListener(diary);
     }
+
+
 
     ChildEventListener diary = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
             DiaryVo vo = dataSnapshot.getValue(DiaryVo.class);
-            if (mPostingId.getText().toString().equals(vo.getPostingId())) {
+
+            if ( mPostingId.getText().toString().equals(vo.getPostingId()) ) {
 
                 mEditTitle.setText(vo.getTitle());
                 mEditContent.setText(vo.getContent());
                 mDiaryDate.setText(vo.getDate());
+
             }
         }
 
@@ -179,6 +198,10 @@ public class DiaryModifyActivity extends Activity {
         }
     };
 
+
+
+
+
     private void openDatePickerDialog() {
 
         DatePickerDialog dialog = new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
@@ -188,4 +211,27 @@ public class DiaryModifyActivity extends Activity {
         }, mYear, mMonth, mDay);
         dialog.show();
     }
+
+
+
+
+
+
+    private void search() {
+
+        DatabaseReference group = mDBRef.child("user").child(mUser.getUid()).child("groupId");
+        group.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GroupID = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
 }

@@ -73,15 +73,7 @@ public class DiaryDetailActivity extends Activity {
 
     private String ThemeColor;
 
-    private DiaryPageAdapter adapter;
-    private ArrayList<DiaryVo> mItems = new ArrayList<>();
 
-//    @Override
-//    public void onBackPressed() {
-//        super.onBackPressed();
-//        setResult(Const.RESULT_REMOVE_DIARY);
-//        finish();
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +104,7 @@ public class DiaryDetailActivity extends Activity {
             public void onClick(View v) {
                 mIntent = new Intent(mContext, DiaryMoreDialog.class);
                 mIntent.putExtra("postingId", mPostingId.getText().toString());
-//                startActivity(mIntent);
-                startActivityForResult(mIntent, Const.REQUEST_REMOVE_DIARY);
+                startActivity(mIntent);
             }
         });
 
@@ -135,44 +126,18 @@ public class DiaryDetailActivity extends Activity {
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            DiaryVo vo = dataSnapshot.getValue(DiaryVo.class);
-            if (mPostingId.getText().toString().equals(vo.getPostingId())) {
-                mDiaryTitle.setText(vo.getTitle());
-                mDiaryContent.setText(vo.getContent());
-                mDiaryDate.setText(vo.getDate());
-            }
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            finish();
-
         }
 
         @Override
         public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-
         }
     };
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        switch (requestCode) {
-//            case Const.REQUEST_REMOVE_DIARY:
-//
-////                setResult(Const.RESULT_REMOVE_DIARY);
-//                finish();
-//
-//                break;
-//        }
-//
-//    }
 }

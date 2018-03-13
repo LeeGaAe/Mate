@@ -146,6 +146,9 @@ public class DiaryPageActivity extends Activity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+
+
             }
 
             @Override

@@ -113,7 +113,8 @@
                         android:orientation="vertical">
 
                         <ImageView
-                            android:layout_width="match_parent"
+                            android:id="@+id/my_pic"
+                            android:layout_width="130dp"
                             android:layout_height="130dp"
                             android:src="@drawable/circle" />
 
@@ -293,6 +294,7 @@
                         android:id="@+id/modify_profile"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
+                        android:clickable="true"
                         android:background="@color/White"
                         android:gravity="center_vertical">
 

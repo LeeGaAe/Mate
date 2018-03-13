@@ -14,16 +14,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.Calendar;
@@ -48,6 +47,9 @@ public class FragmentHome extends Fragment {
     @BindView(R.id.btn_diary) ImageView mDiary;
     @BindView(R.id.partner_profile) LinearLayout mPartProfile;
     @BindView(R.id.btn_date_picker) LinearLayout mBtnDatePicker;
+
+    @BindView(R.id.my_pic) ImageView mMyPic;
+    @BindView(R.id.partner_pic) ImageView mPartnerPic;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
@@ -114,6 +116,11 @@ public class FragmentHome extends Fragment {
                 openDatePicker();
             }
         });
+
+
+        Glide.with(this).load(R.mipmap.ic_launcher_ban).apply(new RequestOptions().circleCrop().centerCrop()).into(mMyPic);
+        Glide.with(this).load(R.mipmap.ic_launcher_ban).apply(new RequestOptions().circleCrop().centerCrop()).into(mPartnerPic);
+
     }
 
 
@@ -181,6 +188,7 @@ public class FragmentHome extends Fragment {
 
 
                         mSelectStartDay.setText("우리" + "\n" + getDatingPeriod(startDay) + "\n" + "일째 사랑중");
+
                     }
 
                 });

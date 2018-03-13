@@ -214,7 +214,7 @@ public class ChatActivity extends Activity {
 
     private void setPartnerFCM() {
 
-        mDBRef.child("user").child(mUser.getUid()).addValueEventListener(new ValueEventListener() {
+        mDBRef.child("user").child(mUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 SignUpVo vo = dataSnapshot.getValue(SignUpVo.class);
