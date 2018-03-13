@@ -33,6 +33,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Calendar;
 
@@ -104,6 +105,7 @@ public class SignUpActivity extends Activity {
     ImageView mLoading;
 
     String GenderStr = "M";
+    String FCMToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,8 @@ public class SignUpActivity extends Activity {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference();
+        FCMToken = FirebaseInstanceId.getInstance().getToken();
+
 
         mBtnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,13 +278,12 @@ public class SignUpActivity extends Activity {
                     signUpVo.setGender(GenderStr);
                     signUpVo.setBirth(mBirth.getText().toString());
                     signUpVo.setPhone_num(mPhoneNum.getText().toString());
+                    signUpVo.setFcmToken(FCMToken);
 
                     mDBRef.child("user").child(task.getResult().getUser().getUid()).setValue(signUpVo);
 
                     Toast.makeText(mContext, "회원가입 완료", Toast.LENGTH_SHORT).show();
 
-//                    mIntent = new Intent(mContext,LoginActivity.class);
-//                    startActivity(mIntent);
                     finish();
 
                 } else {

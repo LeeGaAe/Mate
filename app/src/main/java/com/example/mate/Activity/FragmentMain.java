@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 
 import Util.Const;
@@ -40,6 +41,7 @@ public class FragmentMain extends FragmentActivity {
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
+    private FirebaseUser mUser;
 
     @BindView(R.id.bottom_area)
     LinearLayout mBottomArea;
@@ -58,6 +60,9 @@ public class FragmentMain extends FragmentActivity {
 
     String json;
     SignUpVo java;
+//    String refreshToken;
+//
+//    String partnerUid;
 
     @Override
     public void onBackPressed() {
@@ -77,6 +82,13 @@ public class FragmentMain extends FragmentActivity {
 
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference().child("user");
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+//        refreshToken = FirebaseInstanceId.getInstance().getToken();
+//        Log.d("lga" ,refreshToken);
+
+//        mDBRef.addValueEventListener(setRefreshToken);
+
 
         json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
@@ -102,9 +114,6 @@ public class FragmentMain extends FragmentActivity {
     private void partner(){
 
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String me = user.getUid();
-
         mDBRef.orderByChild("groupId").equalTo(java.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -113,23 +122,32 @@ public class FragmentMain extends FragmentActivity {
                     SignUpVo vo = snapshot.getValue(SignUpVo.class);
 
                     if (!java.getEmail().equals(vo.getEmail())) {
+
                         PartnerVo partnerVo = new PartnerVo();
 
                         partnerVo.setPart_email(vo.getEmail());
                         partnerVo.setPart_name(vo.getNickname());
                         partnerVo.setPart_phone_num(vo.getPhone_num());
                         partnerVo.setPart_birth(vo.getBirth());
+                        partnerVo.setPart_fcmToken(vo.getFcmToken());
+                        partnerVo.setPart_uid(vo.getUid());
+
+
+//                        partnerUid = vo.getUid();
+
 
                         java.setPartnerVo(partnerVo);
                         json = new Gson().toJson(java);
                         PreferenceUtil.getInstance(getApplicationContext()).setString(PreferenceUtil.MY_INFO, json);
 
-                        mDBRef.child(me).child("partnerVo").setValue(partnerVo);
+                        mDBRef.child(mUser.getUid()).child("partnerVo").setValue(partnerVo);
 
                         // 초기화면
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_place, new FragmentHome())
                                 .commit();
+
+                        changeView();
 
                     }
                 }
@@ -217,4 +235,24 @@ public class FragmentMain extends FragmentActivity {
                 break;
         }
     }
+
+//    ValueEventListener setRefreshToken = new ValueEventListener() {
+//        @Override
+//        public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//            SignUpVo vo = dataSnapshot.getValue(SignUpVo.class);
+//
+//            vo.setFcmToken(refreshToken);
+//
+//            mDBRef.child(mUser.getUid()).child("fcmToken").setValue(refreshToken);
+//            mDBRef.child(partnerUid).child("partnerVo").child("part_fcmToken").setValue(refreshToken);
+//
+//
+//        }
+//
+//        @Override
+//        public void onCancelled(DatabaseError databaseError) {
+//
+//        }
+//    };
 }

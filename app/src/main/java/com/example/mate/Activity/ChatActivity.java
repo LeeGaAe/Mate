@@ -20,12 +20,13 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.mate.Activity.Adapter.ChatAdapter;
+import com.example.mate.Activity.Firebase.FirebaseMessagingService;
 import com.example.mate.Activity.Vo.ChatVo;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
@@ -39,7 +40,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import Util.Const;
@@ -53,8 +59,11 @@ import butterknife.ButterKnife;
 
 public class ChatActivity extends Activity {
 
+    private static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
+    private static final String SERVER_KEY = "AAAAncoMAbs:APA91bEMG0RBUBtVX4pqRWzXHjCRmu9JPaqvPbVb-bSnAH4wg3WdwyVDWC7jWtXyPu7EWiYdpuEEknfVN-zWb07CQCnCggIgmGEBOquAjjRDQNFzVAS-kHt0-MSJwLvcRPuN114DlNWf";
+
+
     private Context mContext;
-    private Intent mIntent;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
@@ -78,21 +87,16 @@ public class ChatActivity extends Activity {
     @BindView(R.id.btn_send)
     LinearLayout mBtnSend;
 
-    @BindView(R.id.btn_set)
-    LinearLayout mBtnSet;
-
-    @BindView(R.id.img) ImageView mImage1;
-
 
     private ChatAdapter adapter;
     private ArrayList<ChatVo> mItems = new ArrayList<>();
 
-    private Uri mImageUri;
-
     String email;
     String json;
     SignUpVo java;
+
     String groupID;
+    String partnerFCM;
 
 
     LinearLayoutManager mLayoutManager;
@@ -103,6 +107,7 @@ public class ChatActivity extends Activity {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         mContext = this;
+
 
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference();
@@ -123,12 +128,15 @@ public class ChatActivity extends Activity {
     }
 
     private void init() {
+
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
+
+
         mEditChat.addTextChangedListener(textWatcher);
 
         mBtnSend.setOnClickListener(new View.OnClickListener() {
@@ -140,25 +148,23 @@ public class ChatActivity extends Activity {
 
                 if (!TextUtils.isEmpty(message)) {
                     ChatVo vo = new ChatVo();
-                    vo.setMessage(mEditChat.getText().toString());
+                    vo.setMessage(message);
                     vo.setTime(time);
                     vo.setEmail(email);
                     vo.setGroupId(groupID);
+
                     mDBRef.child("chat").push().setValue(vo);
+
                 }
+
+
                 mEditChat.setText("");
+
+                setPartnerFCM();
+
+
             }
         });
-
-
-        mBtnSet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAlbum();
-            }
-        });
-
-
     }
 
     private void initFireBase() {
@@ -167,21 +173,21 @@ public class ChatActivity extends Activity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                    ChatVo vo = dataSnapshot.getValue(ChatVo.class);
+                ChatVo vo = dataSnapshot.getValue(ChatVo.class);
 
-                    if (vo.getGroupId().equals(groupID)) {
-                        mItems.add(vo);
+                if (vo.getGroupId().equals(groupID)) {
+                    mItems.add(vo);
 
-                        adapter = new ChatAdapter(mItems, email);
-                        mChatting.setAdapter(adapter);
-                        mChatting.scrollToPosition(mItems.size() - 1);
+                    adapter = new ChatAdapter(mItems, email);
+                    mChatting.setAdapter(adapter);
+                    mChatting.scrollToPosition(mItems.size() - 1);
 
-                        mChatting.setHasFixedSize(true);
-                        mLayoutManager = new LinearLayoutManager(mContext);
-                        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                        mChatting.setLayoutManager(mLayoutManager);
-                    }
+                    mChatting.setHasFixedSize(true);
+                    mLayoutManager = new LinearLayoutManager(mContext);
+                    mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                    mChatting.setLayoutManager(mLayoutManager);
                 }
+            }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
@@ -205,6 +211,59 @@ public class ChatActivity extends Activity {
         });
     }
 
+
+    private void setPartnerFCM() {
+
+        mDBRef.child("user").child(mUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                SignUpVo vo = dataSnapshot.getValue(SignUpVo.class);
+
+                partnerFCM = vo.getPartnerVo().getPart_fcmToken();
+                Log.d("lga", partnerFCM);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // FMC 메시지 생성 start
+                            JSONObject root = new JSONObject();
+                            JSONObject notification = new JSONObject();
+                            notification.put("body", mEditChat.getText().toString());
+                            notification.put("title", getString(R.string.app_name));
+                            root.put("notification", notification);
+                            root.put("to", partnerFCM);
+                            // FMC 메시지 생성 end
+
+                            URL Url = new URL(FCM_MESSAGE_URL);
+                            HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                            conn.setRequestMethod("POST");
+                            conn.setDoOutput(true);
+                            conn.setDoInput(true);
+                            conn.addRequestProperty("Authorization", "key=" + SERVER_KEY);
+                            conn.setRequestProperty("Accept", "application/json");
+                            conn.setRequestProperty("Content-type", "application/json");
+                            OutputStream os = conn.getOutputStream();
+                            os.write(root.toString().getBytes("utf-8"));
+                            os.flush();
+                            conn.getResponseCode();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
     private void search() {
 
         DatabaseReference group = mDBRef.child("user").child(mUser.getUid()).child("groupId");
@@ -219,130 +278,6 @@ public class ChatActivity extends Activity {
 
             }
         });
-    }
-
-
-    private void openAlbum() {
-
-        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext, R.style.MyAlertDialogStyle);
-
-        dialog.setTitle("채팅창 화면");
-        dialog.setCancelable(false);
-
-        dialog.setPositiveButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.setNegativeButton("갤러리", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                doTakePictureAlbum();
-            }
-
-        });
-
-
-        AlertDialog alertDialog = dialog.create();
-        alertDialog.show();
-    }
-
-
-
-    /*
-    앨범 호출하기
-    */
-    public void doTakePictureAlbum() {
-
-        int permissionCheck = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, Const.REQUEST_PERMISSION_ALBUM);
-
-        } else {
-
-            mIntent = new Intent(Intent.ACTION_PICK);
-            mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-            startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
-        }
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-
-            case Const.REQUEST_PERMISSION_ALBUM:
-                if (grantResults[0] == 0) {
-
-                    mIntent = new Intent(Intent.ACTION_PICK);
-                    mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-                    startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
-
-                } else {
-
-                    finish();
-
-                }
-
-                break;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode != Activity.RESULT_OK) {
-            onBackPressed();
-            return;
-        }
-        switch (requestCode) {
-
-            case Const.TAKE_PICTURE_ALBUM:
-
-                mImageUri = data.getData();
-
-
-            case Const.TAKE_PICTURE_CAMERA:
-
-                mIntent = new Intent("com.android.camera.action.CROP");
-                mIntent.setDataAndType(mImageUri, "image/*");
-                mIntent.putExtra("scale", ImageView.ScaleType.FIT_XY);
-                mIntent.putExtra("return-data", true);
-                startActivityForResult(mIntent, Const.CROP_PICTURE);
-
-                break;
-
-            case Const.CROP_PICTURE:
-
-                if ( resultCode != Activity.RESULT_OK) {
-                    return;
-                }
-
-                final Bundle extra = data.getExtras();
-                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BanDiaryImage/" + System.currentTimeMillis() + ".jpg";
-
-                if (extra != null) {
-                    Bitmap photo = extra.getParcelable("data");
-
-                    mImage1.setImageBitmap(photo);
-
-
-                    break;
-                }
-
-                File f = new File(mImageUri.getPath());
-                if (f.exists()) {
-                    f.delete();
-                }
-        }
-
     }
 
 

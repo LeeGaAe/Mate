@@ -13,7 +13,8 @@ public class PartnerVo {
     public String part_phone_num;
     public String part_birth;
     public String part_email;
-    public String partConnectYN;
+    public String part_fcmToken;
+    public String part_uid;
 
 
     public PartnerVo() {
@@ -52,11 +53,19 @@ public class PartnerVo {
         this.part_email = part_email;
     }
 
-    public String getPartConnectYN() {
-        return partConnectYN;
+    public String getPart_fcmToken() {
+        return part_fcmToken;
     }
 
-    public void setPartConnectYN(String partConnectYN) {
-        this.partConnectYN = partConnectYN;
+    public void setPart_fcmToken(String part_fcmToken) {
+        this.part_fcmToken = part_fcmToken;
+    }
+
+    public String getPart_uid() {
+        return part_uid;
+    }
+
+    public void setPart_uid(String part_uid) {
+        this.part_uid = part_uid;
     }
 }

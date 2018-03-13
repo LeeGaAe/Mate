@@ -76,4 +76,5 @@ public class ChatVo {
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
+
 }

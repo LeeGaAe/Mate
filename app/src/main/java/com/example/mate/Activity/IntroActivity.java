@@ -71,10 +71,13 @@ public class IntroActivity extends Activity {
         }, 2000);
     }
 
+
     //파트너 연결 유무확인
     ValueEventListener isPartner = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+
+//            SignUpVo vo = dataSnapshot.getValue(SignUpVo.class);
 
             String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
             SignUpVo java = new Gson().fromJson(json, SignUpVo.class);

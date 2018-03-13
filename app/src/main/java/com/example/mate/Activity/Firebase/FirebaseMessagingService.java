@@ -23,6 +23,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     // [START receive_message]
 
+
     /* 메세지 받았을때 처리 */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -48,13 +49,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
 //                PendingIntent.FLAG_ONE_SHOT);
 //
-//        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 //        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-//                .setSmallIcon(R.mipmap.ic_stat_onesignal_default).setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher_ban) )
+//                .setSmallIcon(R.mipmap.ic_stat_onesignal_default).setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_ban))
 //                .setContentTitle("반쪽 알람")
 //                .setContentText(message)
 //                .setAutoCancel(true)
-//                .setSound(defaultSoundUri).setLights(000000255,500,2000)
+//                .setSound(defaultSoundUri).setLights(000000255, 500, 2000)
 //                .setContentIntent(pendingIntent);
 //
 //        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

@@ -22,11 +22,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.GsonBuilder;
 
 import Util.PreferenceUtil;
@@ -45,6 +47,7 @@ public class LoginActivity extends Activity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
     private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
 
     @BindView(R.id.btn_login)
     ImageButton mBtnLogin;
@@ -64,6 +67,9 @@ public class LoginActivity extends Activity {
     @BindView(R.id.loading)
     ImageView mLoading;
 
+    String refreshToken;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +81,9 @@ public class LoginActivity extends Activity {
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference().child("user");
         mAuth = FirebaseAuth.getInstance();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        refreshToken = FirebaseInstanceId.getInstance().getToken();
 
         mBtnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,14 +143,17 @@ public class LoginActivity extends Activity {
 
             //내정보 json형식으로 입력 ( why : 파트너연결하기에서 본인의 번호를 적지 않기 위해서 )
             String json = new GsonBuilder().serializeNulls().create().toJson(vo, SignUpVo.class);
-            Log.d("json", json);
             PreferenceUtil.getInstance(getApplicationContext()).setString(PreferenceUtil.MY_INFO, json);
 
             if (vo.getPartnerVo()==null) {
                 mIntent = new Intent(mContext, ConnectPartnerActivity.class);
                 startActivity(mIntent);
                 finish();
+
             } else {
+
+                mDBRef.child(mUser.getUid()).child("fcmToken").setValue(refreshToken);
+
                 mIntent = new Intent(mContext, FragmentMain.class);
                 startActivity(mIntent);
                 finish();
