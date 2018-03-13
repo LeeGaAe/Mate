@@ -2,18 +2,27 @@ package com.example.mate.Activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.mate.Activity.Adapter.ChatAdapter;
@@ -30,6 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import Util.Const;
@@ -50,8 +60,6 @@ public class ChatActivity extends Activity {
     private DatabaseReference mDBRef;
     private FirebaseUser mUser;
 
-    private ChildEventListener mChildEventListener;
-
     @BindView(R.id.top_area)
     LinearLayout mTopArea;
 
@@ -70,14 +78,22 @@ public class ChatActivity extends Activity {
     @BindView(R.id.btn_send)
     LinearLayout mBtnSend;
 
+    @BindView(R.id.btn_set)
+    LinearLayout mBtnSet;
+
+    @BindView(R.id.img) ImageView mImage1;
+
 
     private ChatAdapter adapter;
     private ArrayList<ChatVo> mItems = new ArrayList<>();
+
+    private Uri mImageUri;
 
     String email;
     String json;
     SignUpVo java;
     String groupID;
+
 
     LinearLayoutManager mLayoutManager;
 
@@ -131,6 +147,14 @@ public class ChatActivity extends Activity {
                     mDBRef.child("chat").push().setValue(vo);
                 }
                 mEditChat.setText("");
+            }
+        });
+
+
+        mBtnSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAlbum();
             }
         });
 
@@ -196,6 +220,131 @@ public class ChatActivity extends Activity {
             }
         });
     }
+
+
+    private void openAlbum() {
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext, R.style.MyAlertDialogStyle);
+
+        dialog.setTitle("채팅창 화면");
+        dialog.setCancelable(false);
+
+        dialog.setPositiveButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setNegativeButton("갤러리", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                doTakePictureAlbum();
+            }
+
+        });
+
+
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+    }
+
+
+
+    /*
+    앨범 호출하기
+    */
+    public void doTakePictureAlbum() {
+
+        int permissionCheck = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(ChatActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, Const.REQUEST_PERMISSION_ALBUM);
+
+        } else {
+
+            mIntent = new Intent(Intent.ACTION_PICK);
+            mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+            startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+
+            case Const.REQUEST_PERMISSION_ALBUM:
+                if (grantResults[0] == 0) {
+
+                    mIntent = new Intent(Intent.ACTION_PICK);
+                    mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+                    startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
+
+                } else {
+
+                    finish();
+
+                }
+
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != Activity.RESULT_OK) {
+            onBackPressed();
+            return;
+        }
+        switch (requestCode) {
+
+            case Const.TAKE_PICTURE_ALBUM:
+
+                mImageUri = data.getData();
+
+
+            case Const.TAKE_PICTURE_CAMERA:
+
+                mIntent = new Intent("com.android.camera.action.CROP");
+                mIntent.setDataAndType(mImageUri, "image/*");
+                mIntent.putExtra("scale", ImageView.ScaleType.FIT_XY);
+                mIntent.putExtra("return-data", true);
+                startActivityForResult(mIntent, Const.CROP_PICTURE);
+
+                break;
+
+            case Const.CROP_PICTURE:
+
+                if ( resultCode != Activity.RESULT_OK) {
+                    return;
+                }
+
+                final Bundle extra = data.getExtras();
+                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BanDiaryImage/" + System.currentTimeMillis() + ".jpg";
+
+                if (extra != null) {
+                    Bitmap photo = extra.getParcelable("data");
+
+                    mImage1.setImageBitmap(photo);
+
+
+                    break;
+                }
+
+                File f = new File(mImageUri.getPath());
+                if (f.exists()) {
+                    f.delete();
+                }
+        }
+
+    }
+
 
     TextWatcher textWatcher = new TextWatcher() {
         @Override

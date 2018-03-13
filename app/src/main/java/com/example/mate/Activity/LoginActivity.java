@@ -120,6 +120,7 @@ public class LoginActivity extends Activity {
             public void onClick(View view) {
                 mIntent = new Intent(mContext, SearchInfoActivity.class);
                 startActivity(mIntent);
+                finish();
             }
         });
     }

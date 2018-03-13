@@ -17,6 +17,7 @@ import com.example.mate.Activity.Adapter.ChatAdapter;
 import com.example.mate.Activity.Adapter.DiaryPageAdapter;
 import com.example.mate.Activity.Vo.ChatVo;
 import com.example.mate.Activity.Vo.DiaryVo;
+import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -47,6 +49,10 @@ public class DiaryPageActivity extends Activity {
     private DatabaseReference mDBRef;
     private FirebaseUser mUser;
 
+    @BindView(R.id.layout_list)
+    LinearLayout mLayList;
+    @BindView(R.id.layout_empty)
+    LinearLayout mLayEmpty;
     @BindView(R.id.top_area)
     LinearLayout mTopArea;
     @BindView(R.id.btn_back)
@@ -62,7 +68,7 @@ public class DiaryPageActivity extends Activity {
     private String ThemeColor;
     private String GroupID;
 
-    LinearLayoutManager mLayoutManager;
+//    LinearLayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,6 +87,7 @@ public class DiaryPageActivity extends Activity {
         init();
         initFireBase();
     }
+
 
     private void init() {
 
@@ -104,31 +111,37 @@ public class DiaryPageActivity extends Activity {
 
     }
 
+
+
     private void initFireBase() {
 
         mDBRef.child("diary").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                DiaryVo vo = dataSnapshot.getValue(DiaryVo.class);
+                    DiaryVo vo = dataSnapshot.getValue(DiaryVo.class);
 
-                if (vo.getGroupID().equals(GroupID)) {
+                    if (vo.getGroupID().equals(GroupID)) {
+                        mItems.add(vo);
 
-                    mItems.add(vo);
+                        mLayEmpty.setVisibility(View.GONE);
+                        mLayList.setVisibility(View.VISIBLE);
 
-                    adapter = new DiaryPageAdapter(mItems);
-//                    adapter.setData(mItems);
+                        LinearLayoutManager mLayoutManager = new LinearLayoutManager(mContext);
+                        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        mLayoutManager.setReverseLayout(true);
+                        mLayoutManager.setStackFromEnd(true);
 
-                    mLv_Diary.setAdapter(adapter);
-                    mLv_Diary.setHasFixedSize(true);
+                        adapter = new DiaryPageAdapter(getApplicationContext());
+                        adapter.setData(mItems);
+                        mLv_Diary.setLayoutManager(mLayoutManager);
+                        mLv_Diary.setAdapter(adapter);
+                        mLv_Diary.setHasFixedSize(true);
 
-                    mLayoutManager = new LinearLayoutManager(mContext);
-                    mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                    mLayoutManager.setReverseLayout(true);
-                    mLayoutManager.setStackFromEnd(true);
-                    mLv_Diary.setLayoutManager(mLayoutManager);
-
-                }
+                    } else {
+                        mLayEmpty.setVisibility(View.VISIBLE);
+                        mLayList.setVisibility(View.GONE);
+                    }
             }
 
             @Override
@@ -137,7 +150,6 @@ public class DiaryPageActivity extends Activity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                finish();
 
             }
 

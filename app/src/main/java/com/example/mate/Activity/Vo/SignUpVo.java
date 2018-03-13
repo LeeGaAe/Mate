@@ -9,6 +9,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class SignUpVo {
 
+    public String uid;
     public String email;
     public String password;
     public String nickname;
@@ -18,9 +19,19 @@ public class SignUpVo {
     public PartnerVo partnerVo;
     public String groupID;
     public String startDate;
+    public String fcmToken;
+    public String fcmEmail;
 
     public SignUpVo() {
 
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getEmail() {
@@ -93,5 +104,21 @@ public class SignUpVo {
 
     public void setStartDate(String startDate) {
         this.startDate = startDate;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public String getFcmEmail() {
+        return fcmEmail;
+    }
+
+    public void setFcmEmail(String fcmEmail) {
+        this.fcmEmail = fcmEmail;
     }
 }

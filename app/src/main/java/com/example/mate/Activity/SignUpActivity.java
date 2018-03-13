@@ -267,6 +267,7 @@ public class SignUpActivity extends Activity {
 
                     SignUpVo signUpVo = new SignUpVo();
 
+                    signUpVo.setUid(task.getResult().getUser().getUid());
                     signUpVo.setEmail(mEditEmail.getText().toString());
                     signUpVo.setPassword(mConfirm.getText().toString());
                     signUpVo.setNickname(mNickname.getText().toString());
@@ -277,8 +278,9 @@ public class SignUpActivity extends Activity {
                     mDBRef.child("user").child(task.getResult().getUser().getUid()).setValue(signUpVo);
 
                     Toast.makeText(mContext, "회원가입 완료", Toast.LENGTH_SHORT).show();
-                    mIntent = new Intent(mContext,LoginActivity.class);
-                    startActivity(mIntent);
+
+//                    mIntent = new Intent(mContext,LoginActivity.class);
+//                    startActivity(mIntent);
                     finish();
 
                 } else {

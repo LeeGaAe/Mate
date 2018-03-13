@@ -36,7 +36,7 @@ import butterknife.ButterKnife;
 public class SearchIDActivity extends Activity {
 
     private Context mContext;
-    private Intent mIntent;
+
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
 
@@ -91,8 +91,6 @@ public class SearchIDActivity extends Activity {
 
                 initFireBase();
 
-                overridePendingTransition(R.anim.anim_slide_in_bottom, R.anim.anim_slide_out_top);
-                mAreaUserId.setVisibility(view.VISIBLE);
             }
         });
 
@@ -117,6 +115,10 @@ public class SearchIDActivity extends Activity {
 
                         email = vo.getEmail();
                         mTxtUserId.setText(email);
+
+
+                        overridePendingTransition(R.anim.anim_slide_in_bottom, R.anim.anim_slide_out_top);
+                        mAreaUserId.setVisibility(View.VISIBLE);
 
                         return;
 

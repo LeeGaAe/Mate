@@ -78,10 +78,11 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/diary_page_view"
+        android:id="@+id/layout_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <android.support.v7.widget.RecyclerView
 
@@ -90,6 +91,15 @@
             android:layout_height="match_parent"
             android:splitMotionEvents="false"/>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
         <TextView
             android:id="@+id/null_diary"
             android:layout_width="match_parent"
@@ -97,11 +107,8 @@
             android:gravity="center"
             android:text="등록된 내용이 없습니다."
             android:textColor="@color/UltraViolet"
-            android:textSize="15sp"
-            android:visibility="gone"/>
-
+            android:textSize="15sp"/>
 
     </LinearLayout>
-
 
 </LinearLayout>

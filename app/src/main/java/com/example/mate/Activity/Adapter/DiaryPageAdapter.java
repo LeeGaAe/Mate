@@ -1,5 +1,6 @@
 package com.example.mate.Activity.Adapter;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -24,17 +25,20 @@ import java.util.ArrayList;
 
 public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.ItemViewHolder> {
 
+    private Context mContext;
     private Intent mIntent;
-    private ArrayList<DiaryVo> mItems;
+    private ArrayList<DiaryVo> mItems = new ArrayList<>();
 
-    public DiaryPageAdapter(ArrayList<DiaryVo> mItems) {
-        this.mItems = mItems;
+    public DiaryPageAdapter(Context context) {
+
+        mContext = context;
+
     }
 
-//    public void setData(ArrayList<DiaryVo> mItems){
-//        this.mItems = mItems;
-//        notifyDataSetChanged();
-//    }
+    public void setData(ArrayList<DiaryVo> diary){
+        mItems = diary;
+        notifyDataSetChanged();
+    }
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

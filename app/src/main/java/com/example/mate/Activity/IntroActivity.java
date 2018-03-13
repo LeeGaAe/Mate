@@ -35,9 +35,9 @@ public class IntroActivity extends Activity {
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
-
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +52,7 @@ public class IntroActivity extends Activity {
         mUser = mAuth.getCurrentUser(); //로그인이 되어있는지 아닌지(자동로그인)
         mDBRef = mDatabase.getReference().child("user");
 
+
         Handler handle = new Handler();
         handle.postDelayed(new Runnable() {
             public void run() {
@@ -60,7 +61,9 @@ public class IntroActivity extends Activity {
                     mIntent = new Intent(mContext, LoginActivity.class);
                     startActivity(mIntent);
                     finish();
-                } else { //했을 때
+                }
+
+                else { //했을 때
                     mDBRef.addValueEventListener(isPartner);
 
                 }
@@ -73,11 +76,8 @@ public class IntroActivity extends Activity {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
 
-//            SignUpVo vo = dataSnapshot.getValue(SignUpVo.class);
-
             String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
             SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
-
 
             String isPwd = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.COMPLETE_PASSWORD, "");
 
@@ -105,7 +105,4 @@ public class IntroActivity extends Activity {
         public void onCancelled(DatabaseError databaseError) {
         }
     };
-
-
-
 }

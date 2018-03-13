@@ -1,8 +1,17 @@
 package com.example.mate.Activity.Firebase;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
+import com.example.mate.Activity.FragmentMain;
 import com.example.mate.R;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -13,6 +22,8 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 
     // [START receive_message]
+
+    /* 메세지 받았을때 처리 */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
@@ -31,7 +42,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     }
 
 //    private void sendPushNotification(String message) {
-//        Intent intent = new Intent(this, MainActivity.class);
+//        Intent intent;
+//        intent = new Intent(this, FragmentMain.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
 //                PendingIntent.FLAG_ONE_SHOT);

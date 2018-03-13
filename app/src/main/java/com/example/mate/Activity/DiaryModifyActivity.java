@@ -135,6 +135,10 @@ public class DiaryModifyActivity extends Activity {
                 mDBRef.child(postingId).setValue(vo);
                 Toast.makeText(mContext, "완료되었습니다.", Toast.LENGTH_SHORT).show();
 
+//                mIntent = new Intent(mContext, DiaryPageActivity.class);
+//                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(mIntent);
+//                finish();
                 onBackPressed();
             }
         });

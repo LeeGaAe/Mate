@@ -105,6 +105,9 @@ public class DiaryMoreDialog extends Activity {
 
                 Toast.makeText(mContext, "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
+                mIntent = new Intent(mContext, DiaryPageActivity.class);
+                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(mIntent);
                 finish();
 
             }
