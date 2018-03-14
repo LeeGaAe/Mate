@@ -71,6 +71,7 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
         private TextView mWriter;
         private TextView mDate;
 
+
         public ItemViewHolder(View view) {
             super(view);
 

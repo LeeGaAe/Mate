@@ -22,11 +22,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.GsonBuilder;
 
 import Util.PreferenceUtil;
@@ -45,6 +47,8 @@ public class LoginActivity extends Activity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
     private FirebaseAuth mAuth;
+//    private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
 
     @BindView(R.id.btn_login)
     ImageButton mBtnLogin;
@@ -75,6 +79,7 @@ public class LoginActivity extends Activity {
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference().child("user");
         mAuth = FirebaseAuth.getInstance();
+
 
         mBtnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +147,12 @@ public class LoginActivity extends Activity {
                 startActivity(mIntent);
                 finish();
             } else {
+
+                String refreshFCMToken = FirebaseInstanceId.getInstance().getToken();
+                Log.d("lga", refreshFCMToken);
+                mDBRef.child(vo.getUid()).child("fcmToken").setValue(refreshFCMToken);
+                mDBRef.child(vo.getPartnerVo().getPart_uid()).child("partnerVo").child("part_fcmToken").setValue(refreshFCMToken);
+
                 mIntent = new Intent(mContext, FragmentMain.class);
                 startActivity(mIntent);
                 finish();

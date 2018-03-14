@@ -85,9 +85,9 @@ public class FragmentMain extends FragmentActivity {
 
     }
 
-    private void connectPartnerVo(){
+    private void connectPartnerVo() {
 
-        if (java.partnerVo==null) {
+        if (java.partnerVo == null) {
 
             partner();
 
@@ -99,7 +99,7 @@ public class FragmentMain extends FragmentActivity {
 
     }
 
-    private void partner(){
+    private void partner() {
 
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -120,6 +120,7 @@ public class FragmentMain extends FragmentActivity {
                         partnerVo.setPart_phone_num(vo.getPhone_num());
                         partnerVo.setPart_birth(vo.getBirth());
                         partnerVo.setPart_fcmToken(vo.getFcmToken());
+                        partnerVo.setPart_uid(vo.getUid());
 
                         java.setPartnerVo(partnerVo);
                         json = new Gson().toJson(java);
@@ -151,18 +152,17 @@ public class FragmentMain extends FragmentActivity {
 
         FrameLayout frame = (FrameLayout) findViewById(R.id.fragment_place);
 
-                if (frame.getChildCount() > 0) { // FrameLayout에서 뷰 삭제.
-                    frame.removeViewAt(0);
-                }
-
-
-        View view = null;
+        if (frame.getChildCount() > 0) { // FrameLayout에서 뷰 삭제.
+            frame.removeViewAt(0);
+        }
 
         // 초기화면
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_place, new FragmentHome())
                 .commit();
 
+
+        View view = null;
 
 
         mBtnHome.setOnClickListener(new View.OnClickListener() {

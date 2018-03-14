@@ -1,7 +1,9 @@
 package com.example.mate.Activity;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,6 +23,7 @@ import Util.Const;
 import Util.PreferenceUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by 가애 on 2018-03-01.
@@ -37,9 +40,13 @@ public class FragmentSetting extends Fragment {
     @BindView (R.id.btn_pwd) LinearLayout mBtnPwd;
     @BindView (R.id.btn_theme) LinearLayout mBtnTheme;
 
+    @BindView(R.id.my_pic) CircleImageView mMyPic;
+
+    Uri mImageUri;
 
     String json;
     SignUpVo java;
+
 
 
     @Nullable
@@ -57,6 +64,8 @@ public class FragmentSetting extends Fragment {
 
         ButterKnife.bind(this, view);
 
+        mIntent = getActivity().getIntent();
+
         json = PreferenceUtil.getInstance(getActivity()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
 
@@ -67,6 +76,13 @@ public class FragmentSetting extends Fragment {
 
 
     private void init(){
+
+
+//        if ( mImageUri != null ) {
+//            mImageUri = mIntent.getParcelableExtra("ProfileUri");
+//        }
+
+
 
         mMyName.setText(java.getNickname());
         mMyEmail.setText(java.getEmail());
@@ -101,6 +117,10 @@ public class FragmentSetting extends Fragment {
                 getActivity().startActivityForResult(mIntent,Const.REQUEST_THEME_SET);
             }
         });
+
+
+
+//        mMyPic.setImageBitmap(BitmapFactory.decodeFile(extras.getString("uri")));
 
     }
 }

@@ -116,7 +116,7 @@ public class DiaryMoreDialog extends Activity {
         dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                onBackPressed();
+                dialog.dismiss();
             }
         });
 

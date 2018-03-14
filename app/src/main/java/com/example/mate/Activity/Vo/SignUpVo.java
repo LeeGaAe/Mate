@@ -20,7 +20,6 @@ public class SignUpVo {
     public String groupID;
     public String startDate;
     public String fcmToken;
-    public String fcmEmail;
 
     public SignUpVo() {
 
@@ -114,11 +113,4 @@ public class SignUpVo {
         this.fcmToken = fcmToken;
     }
 
-    public String getFcmEmail() {
-        return fcmEmail;
-    }
-
-    public void setFcmEmail(String fcmEmail) {
-        this.fcmEmail = fcmEmail;
-    }
 }

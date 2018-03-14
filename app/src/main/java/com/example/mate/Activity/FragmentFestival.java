@@ -42,8 +42,6 @@ public class FragmentFestival extends Fragment {
     private ArrayList<FestivalVo> mItems = new ArrayList<>();
     private FirebaseFirestore mDBStore;
 
-//    @BindView(R.id.loading) ImageView mLoading;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,7 +54,6 @@ public class FragmentFestival extends Fragment {
 
         ButterKnife.bind(this, view);
 
-//        Glide.with(getContext()).load(R.raw.loading).into(mLoading);
         mDBStore = FirebaseFirestore.getInstance();
 
         setData();

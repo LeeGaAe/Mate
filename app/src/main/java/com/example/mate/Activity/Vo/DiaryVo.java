@@ -14,6 +14,7 @@ public class DiaryVo {
     public String content;
     public String date;
     public String groupID;
+    public int photo;
 
     public DiaryVo(){
 
@@ -65,5 +66,13 @@ public class DiaryVo {
 
     public void setGroupID(String groupID) {
         this.groupID = groupID;
+    }
+
+    public int getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(int photo) {
+        this.photo = photo;
     }
 }

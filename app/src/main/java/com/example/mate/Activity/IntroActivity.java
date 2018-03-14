@@ -64,7 +64,7 @@ public class IntroActivity extends Activity {
                 }
 
                 else { //했을 때
-                    mDBRef.addValueEventListener(isPartner);
+                    mDBRef.addListenerForSingleValueEvent(isPartner);
 
                 }
             }

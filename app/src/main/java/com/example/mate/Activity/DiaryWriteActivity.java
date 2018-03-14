@@ -214,7 +214,6 @@ public class DiaryWriteActivity extends Activity {
             }
         });
 
-
         AlertDialog alertDialog = dialog.create();
         alertDialog.show();
     }
@@ -228,29 +227,15 @@ public class DiaryWriteActivity extends Activity {
         int permissionCheck = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA);
 
         if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(DiaryWriteActivity.this, new String[]{android.Manifest.permission.CAMERA}, Const.REQUEST_PERMISSION_CAMERA);
+
+            ActivityCompat.requestPermissions(DiaryWriteActivity.this,
+                    new String[]{android.Manifest.permission.CAMERA}, Const.REQUEST_PERMISSION_CAMERA);
 
         } else {
 
-            mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            intentCamera();
 
-            String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-            mImageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-
-            mIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-            startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
-
-//            mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//            startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
         }
-
-//        mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//
-//        String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-//        mImageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-//
-//        mIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-//        startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
 
     }
 
@@ -262,21 +247,13 @@ public class DiaryWriteActivity extends Activity {
         int permissionCheck = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(DiaryWriteActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, Const.REQUEST_PERMISSION_ALBUM);
+            ActivityCompat.requestPermissions(DiaryWriteActivity.this,
+                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, Const.REQUEST_PERMISSION_ALBUM);
 
         } else {
 
-//            mIntent = new Intent(Intent.ACTION_PICK);
-//            mIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-//            mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-//            mIntent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//            startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
-//
+            intentAlbum();
 
-            //원본
-            mIntent = new Intent(Intent.ACTION_PICK);
-            mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-            startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
         }
 
     }
@@ -286,33 +263,34 @@ public class DiaryWriteActivity extends Activity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case Const.REQUEST_PERMISSION_CAMERA:
+            case Const.REQUEST_PERMISSION_CAMERA :
+
                 if (grantResults[0] == 0) {
 
-                    mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-                    String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-                    mImageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-
-                    mIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-                    startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
+                    intentCamera();
 
                 } else {
+
                     finish();
+
                 }
+
                 break;
 
-            case Const.REQUEST_PERMISSION_ALBUM:
+            case Const.REQUEST_PERMISSION_ALBUM :
+
                 if (grantResults[0] == 0) {
 
-                    mIntent = new Intent(Intent.ACTION_PICK);
-                    mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-                    startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
+                    intentAlbum();
+
                 }
 
                 else {
+
                     finish();
+
                 }
+
                 break;
 
         }
@@ -326,60 +304,15 @@ public class DiaryWriteActivity extends Activity {
             onBackPressed();
             return;
         }
+
         switch (requestCode) {
 
             case Const.TAKE_PICTURE_ALBUM:
 
                 mImagePlace.setVisibility(View.VISIBLE);
                 mImage1.setVisibility(View.VISIBLE);
-//                mImage2.setVisibility(View.VISIBLE);
-//                mImage3.setVisibility(View.VISIBLE);
-//                mImage4.setVisibility(View.VISIBLE);
-//                mImage5.setVisibility(View.VISIBLE);
-//
-//                mImage1.setImageResource(0);
-//                mImage2.setImageResource(0);
-//                mImage3.setImageResource(0);
-//                mImage4.setImageResource(0);
-//                mImage5.setImageResource(0);
 
-                //ClipData 또는 Uri를 가져온다
                 mImageUri = data.getData();
-//                ClipData clipData = data.getClipData();
-
-                //이미지 URI 를 이용하여 이미지뷰에 순서대로 세팅한다.
-//                if(clipData!=null)
-//                {
-//
-//                    for(int i = 0; i < 5; i++)
-//                    {
-//                        if( i < clipData.getItemCount()){
-//
-//                            Uri urione =  clipData.getItemAt(i).getUri();
-//                            switch (i){
-//                                case 0:
-//                                    mImage1.setImageURI(urione);
-//                                    break;
-//                                case 1:
-//                                    mImage2.setImageURI(urione);
-//                                    break;
-//                                case 2:
-//                                    mImage3.setImageURI(urione);
-//                                    break;
-//                                case 3:
-//                                    mImage4.setImageURI(urione);
-//                                    break;
-//                                case 4:
-//                                    mImage5.setImageURI(urione);
-//                                    break;
-//                            }
-//                        }
-//                    }
-//                }
-//                else if(mImageUri != null)
-//                {
-//                    mImage1.setImageURI(mImageUri);
-//                }
 
 
             case Const.TAKE_PICTURE_CAMERA:
@@ -402,12 +335,13 @@ public class DiaryWriteActivity extends Activity {
                 }
 
                 final Bundle extra = data.getExtras();
-                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BanDiaryImage/" + System.currentTimeMillis() + ".jpg";
+//                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BanDiaryImage/" + System.currentTimeMillis() + ".jpg";
 
                 if (extra != null) {
                     Bitmap photo = extra.getParcelable("data");
 
                     mImage1.setImageBitmap(photo);
+
 
 
                     break;
@@ -418,6 +352,27 @@ public class DiaryWriteActivity extends Activity {
                     f.delete();
                 }
         }
+    }
+
+
+    private void intentCamera() {
+
+        mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+
+        String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+        mImageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
+
+        mIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+        startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
+
+    }
+
+    private void intentAlbum() {
+
+        mIntent = new Intent(Intent.ACTION_PICK);
+        mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+        startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
+
     }
 
     private void search() {
