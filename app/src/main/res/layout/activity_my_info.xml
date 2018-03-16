@@ -118,14 +118,7 @@
                             android:layout_width="130dp"
                             android:layout_height="130dp"
                             app:civ_border_width="2dp"
-                            android:src="@mipmap/ic_launcher_ban"
                             app:civ_border_color="@color/Black"/>
-
-                        <!--<ImageView-->
-                            <!--android:id="@+id/my_pic"-->
-                            <!--android:layout_width="130dp"-->
-                            <!--android:layout_height="130dp"-->
-                            <!--android:src="@drawable/circle" />-->
 
                         <LinearLayout
                             android:layout_width="match_parent"

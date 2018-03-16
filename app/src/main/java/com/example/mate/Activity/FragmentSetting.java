@@ -95,15 +95,6 @@ public class FragmentSetting extends Fragment {
 
         init();
 
-        if ( mStorageRef != null ) {
-
-            getProfile();
-
-        } else {
-
-            mMyPic.setImageResource(R.mipmap.ic_launcher_ban);
-        }
-
     }
 
 
@@ -143,6 +134,18 @@ public class FragmentSetting extends Fragment {
                 getActivity().startActivityForResult(mIntent,Const.REQUEST_THEME_SET);
             }
         });
+
+
+
+        StorageReference storageReference =  mStorageRef.child("profile/").child(mUser.getUid() + "/");
+        if (storageReference != null) {
+            Glide.with(this).load(storageReference).into(mMyPic);
+        } else {
+            mMyPic.setImageResource(R.mipmap.ic_launcher_ban);
+        }
+
+
+
     }
 
     private void getProfile() {

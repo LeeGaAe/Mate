@@ -27,6 +27,7 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,6 +40,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -103,7 +105,6 @@ public class MyInfoActivity extends Activity {
     String json;
     SignUpVo java;
 
-
     String PartUid;
 
 
@@ -130,6 +131,8 @@ public class MyInfoActivity extends Activity {
 
         json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
+
+
 
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -326,11 +329,10 @@ public class MyInfoActivity extends Activity {
                 if (extra != null) {
 
                     Bitmap photo = extra.getParcelable("data");
-                    mMyPic.setImageBitmap(photo);
-
+                    Glide.with(mContext).load(cropfile).into(mMyPic);
                     storeCropImage(photo, cropfile);
 
-                    // 크롭된 이미지 store에 저장!!
+                    // 크롭된 이미지 store에 저장
                     Uri file = Uri.fromFile(new File(cropfile));
                     StorageReference riversRef = storageRef.child("profile/").child(mUser.getUid() + "/" +file.getLastPathSegment());
                     UploadTask uploadTask = riversRef.putFile(file);
@@ -342,9 +344,6 @@ public class MyInfoActivity extends Activity {
                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-//                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         }
                     });
 
@@ -377,6 +376,7 @@ public class MyInfoActivity extends Activity {
 //    }
 
 
+    //크롭한 이미지 갤러리에 저장
     private void storeCropImage(Bitmap bitmap, String cropfile){
 
         String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/mate";
