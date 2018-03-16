@@ -3,10 +3,13 @@ package com.example.mate.Activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,14 +17,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.BitmapCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +39,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,9 +50,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 
 import Util.Const;
 import Util.PreferenceUtil;
@@ -65,10 +76,12 @@ public class MyInfoActivity extends Activity {
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference mDBRef = mDatabase.getReference("user");
     private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseStorage mStorage = FirebaseStorage.getInstance();
+    private StorageReference storageRef = mStorage.getReferenceFromUrl("gs://gamate-4c0ad.appspot.com");
 
 
     private Uri mImageUri;
-    private Bitmap photo;
+
 
     @BindView(R.id.btn_back) LinearLayout mBtnBack;
     @BindView(R.id.top_area) LinearLayout mTopArea;
@@ -89,7 +102,6 @@ public class MyInfoActivity extends Activity {
 
     String json;
     SignUpVo java;
-
 
 
     String PartUid;
@@ -113,13 +125,11 @@ public class MyInfoActivity extends Activity {
 
     private void init() {
 
-
         String ThemeColor = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.APP_THEME_COLOR, Const.APP_THEME_COLORS[0]);
         mTopArea.setBackgroundColor(Color.parseColor(ThemeColor));
 
         json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
-
 
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +137,8 @@ public class MyInfoActivity extends Activity {
                 onBackPressed();
             }
         });
+
+
         mBtnCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,6 +182,7 @@ public class MyInfoActivity extends Activity {
         });
 
 
+        // 닉네임 수정
         mBtnComplete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,6 +244,184 @@ public class MyInfoActivity extends Activity {
 
     }
 
+    public void doTakePictureAlbum() {
+
+        int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, Const.REQUEST_PERMISSION_ALBUM);
+
+        } else {
+
+            intentAlbum();
+
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+
+            case Const.REQUEST_PERMISSION_ALBUM :
+
+                if (grantResults[0] == 0) {
+
+                    intentAlbum();
+
+                }
+
+                else {
+
+                    finish();
+
+                }
+
+                break;
+        }
+    }
+
+
+    private void intentAlbum() {
+
+        Intent mIntent = new Intent(Intent.ACTION_PICK);
+        mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+        startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        switch (requestCode){
+            case Const.TAKE_PICTURE_ALBUM:
+
+                mImageUri = data.getData();
+
+            case Const.TAKE_PICTURE_CAMERA:
+
+                Intent mIntent = new Intent("com.android.camera.action.CROP");
+                mIntent.setDataAndType(mImageUri, "image/*");
+                mIntent.putExtra("scale", ImageView.ScaleType.FIT_XY);
+                mIntent.putExtra("return-data", true);
+                startActivityForResult(mIntent, Const.CROP_PICTURE);
+
+                break;
+
+
+            case Const.CROP_PICTURE:
+
+                if ( resultCode != Activity.RESULT_OK) {
+                    return;
+                }
+
+
+                final Bundle extra = data.getExtras();
+                String cropfile = Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/mate/" + System.currentTimeMillis() + ".jpg";
+
+                if (extra != null) {
+
+                    Bitmap photo = extra.getParcelable("data");
+                    mMyPic.setImageBitmap(photo);
+
+                    storeCropImage(photo, cropfile);
+
+                    // 크롭된 이미지 store에 저장!!
+                    Uri file = Uri.fromFile(new File(cropfile));
+                    StorageReference riversRef = storageRef.child("profile/").child(mUser.getUid() + "/" +file.getLastPathSegment());
+                    UploadTask uploadTask = riversRef.putFile(file);
+
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+//                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        }
+                    });
+
+                    break;
+                }
+
+
+                File f = new File(mImageUri.getPath());
+
+                if (f.exists()) {
+
+                    f.delete();
+
+                }
+        }
+    }
+
+//    public String getPath(Uri uri){
+//
+//        String [] proj = { MediaStore.Images.Media.DATA };
+//        CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
+//
+//        Cursor cursor = cursorLoader.loadInBackground ();
+//        int index = cursor.getColumnIndexOrThrow (MediaStore.Images.Media.DATA);
+//
+//        cursor.moveToFirst();
+//
+//        return cursor.getString(index);
+//
+//    }
+
+
+    private void storeCropImage(Bitmap bitmap, String cropfile){
+
+        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/mate";
+        File directory_mate = new File(dirPath);
+
+        if (!directory_mate.exists())
+            directory_mate.mkdir();
+
+        File copyFile = new File(cropfile);
+        BufferedOutputStream out = null;
+
+        try{
+            copyFile.createNewFile();
+            out = new BufferedOutputStream(new FileOutputStream(copyFile));
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,out);
+
+            out.flush();
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+    private void search() {
+
+        DatabaseReference partnerUid = mDBRef.child(mUser.getUid()).child("partnerVo").child("part_uid");
+        partnerUid.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                PartUid = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
 
     private void openDisConnectDialog() {
 
@@ -272,128 +463,4 @@ public class MyInfoActivity extends Activity {
 
 
 
-
-    public void doTakePictureAlbum() {
-
-        int permissionCheck = ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, Const.REQUEST_PERMISSION_ALBUM);
-
-        } else {
-
-            intentAlbum();
-
-        }
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-
-            case Const.REQUEST_PERMISSION_ALBUM :
-
-                if (grantResults[0] == 0) {
-
-                    intentAlbum();
-
-                }
-
-                else {
-
-                    finish();
-
-                }
-
-                break;
-        }
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode != Activity.RESULT_OK) {
-            onBackPressed();
-            return;
-        }
-
-        switch (requestCode) {
-
-            case Const.TAKE_PICTURE_ALBUM:
-
-
-                mImageUri = data.getData();
-
-
-            case Const.TAKE_PICTURE_CAMERA:
-
-                Intent mIntent = new Intent("com.android.camera.action.CROP");
-                mIntent.setDataAndType(mImageUri, "image/*");
-                mIntent.putExtra("scale", ImageView.ScaleType.FIT_XY);
-                mIntent.putExtra("return-data", true);
-                startActivityForResult(mIntent, Const.CROP_PICTURE);
-
-                break;
-
-
-            case Const.CROP_PICTURE:
-
-                if ( resultCode != Activity.RESULT_OK) {
-                    return;
-                }
-
-
-                final Bundle extra = data.getExtras();
-
-                if (extra != null) {
-
-                    photo = extra.getParcelable("data");
-
-                    mMyPic.setImageBitmap(photo);
-
-                    break;
-
-                }
-
-                File f = new File(mImageUri.getPath());
-
-                if (f.exists()) {
-
-                    f.delete();
-
-                }
-        }
-    }
-
-
-    private void intentAlbum() {
-
-        Intent mIntent = new Intent(Intent.ACTION_PICK);
-        mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
-        startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
-
-    }
-
-
-
-    private void search() {
-
-        DatabaseReference partnerUid = mDBRef.child(mUser.getUid()).child("partnerVo").child("part_uid");
-        partnerUid.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                PartUid = dataSnapshot.getValue().toString();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 }

@@ -41,23 +41,16 @@ public class FragmentMain extends FragmentActivity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
 
-    @BindView(R.id.bottom_area)
-    LinearLayout mBottomArea;
-
-    @BindView(R.id.btn_home)
-    LinearLayout mBtnHome;
-
-    @BindView(R.id.btn_map)
-    LinearLayout mBtnMap;
-
-    @BindView(R.id.btn_chat)
-    LinearLayout mBtnChat;
-
-    @BindView(R.id.btn_more)
-    LinearLayout mBtnMore;
+    @BindView(R.id.bottom_area) LinearLayout mBottomArea;
+    @BindView(R.id.btn_home) LinearLayout mBtnHome;
+    @BindView(R.id.btn_map) LinearLayout mBtnMap;
+    @BindView(R.id.btn_chat) LinearLayout mBtnChat;
+    @BindView(R.id.btn_more) LinearLayout mBtnMore;
 
     String json;
     SignUpVo java;
+
+
 
     @Override
     public void onBackPressed() {
@@ -203,7 +196,7 @@ public class FragmentMain extends FragmentActivity {
                         .commit();
             }
         });
-//
+
         if (view != null) {
             frame.addView(view);
         }

@@ -31,8 +31,8 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    implementation 'com.github.bumptech.glide:glide:4.5.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
+    implementation 'com.github.bumptech.glide:glide:4.6.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
 
 //    compile 'jp.wasabeef:glide-transformations:3.0.1'
 //    // If you want to use the GPU Filters
@@ -51,6 +51,7 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:11.8.0'
     compile 'com.google.firebase:firebase-firestore:11.8.0'
     compile 'com.google.firebase:firebase-storage:11.8.0'
+    compile 'com.firebaseui:firebase-ui-storage:0.6.0'
 
     compile 'com.google.code.gson:gson:2.8.2'
 
