@@ -112,5 +112,4 @@ public class SignUpVo {
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
-
 }

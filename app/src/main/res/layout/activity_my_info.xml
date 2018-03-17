@@ -191,7 +191,28 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/Gray" />
+                        android:background="@color/Light_Gray" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="25dp"
+                        android:background="@color/Light_White"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:text="개인정보"
+                            android:textSize="13dp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/Light_Gray" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -205,7 +226,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="15dp"
                             android:text="@string/birth"
-                            android:textSize="14dp" />
+                            android:textSize="13dp" />
 
                         <TextView
                             android:id="@+id/birth"
@@ -221,7 +242,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/Gray" />
+                        android:background="@color/Light_Gray" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -235,7 +256,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="15dp"
                             android:text="이메일"
-                            android:textSize="14dp" />
+                            android:textSize="13dp" />
 
                         <TextView
                             android:id="@+id/my_email"
@@ -251,7 +272,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/Gray" />
+                        android:background="@color/Light_Gray" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -265,7 +286,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="15dp"
                             android:text="@string/sex"
-                            android:textSize="14dp" />
+                            android:textSize="13dp" />
 
                         <TextView
                             android:id="@+id/gender"
@@ -281,7 +302,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/Gray" />
+                        android:background="@color/Light_Gray" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -290,7 +311,28 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/Gray" />
+                        android:background="@color/Light_Gray" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="25dp"
+                        android:background="@color/Light_White"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:text="프로필"
+                            android:textSize="13dp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/Light_Gray" />
 
                     <LinearLayout
                         android:id="@+id/modify_profile"
@@ -305,91 +347,87 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="15dp"
                             android:text="프로필 사진 수정"
-                            android:textSize="14dp" />
+                            android:textSize="13dp" />
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/Gray" />
+                        android:background="@color/Light_Gray" />
 
-                    <!--<LinearLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="45dp"-->
-                    <!--android:background="@color/White"-->
-                    <!--android:gravity="center_vertical">-->
+                    <LinearLayout
+                        android:id="@+id/btn_logout"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="@color/White"
+                    android:gravity="center_vertical">
 
-                    <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginLeft="15dp"-->
-                    <!--android:text="비밀번호 변경"-->
-                    <!--android:textSize="14dp" />-->
+                    <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="로그아웃"
+                    android:textSize="13dp" />
 
-                    <!--</LinearLayout>-->
+                    </LinearLayout>
 
-                    <!--<View-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="1dp"-->
-                    <!--android:background="@color/Gray" />-->
+                    <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/Light_Gray" />
 
-                    <!--<LinearLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="40dp" />-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp" />
 
-                    <!--<View-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="1dp"-->
-                    <!--android:background="@color/Gray" />-->
 
-                    <!--<LinearLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="55dp"-->
-                    <!--android:background="@color/DeepPink"-->
-                    <!--android:gravity="center">-->
+                    <LinearLayout
+                        android:id="@+id/btn_disconnect"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:background="@color/DeepPink"
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
-                    <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginLeft="15dp"-->
-                    <!--android:text="상대방과 연결끊기"-->
-                    <!--android:textColor="@color/White"-->
-                    <!--android:textSize="14dp" />-->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:textColor="@color/White"
+                            android:text="상대방과 연결끊기"
+                            android:textSize="13dp" />
 
-                    <!--</LinearLayout>-->
+                    </LinearLayout>
 
-                    <!--<View-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="1dp"-->
-                    <!--android:background="@color/Gray" />-->
 
                 </LinearLayout>
+
             </FrameLayout>
         </ScrollView>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/btn_disconnect"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.8"
-        android:background="@color/DeepPink"
-        android:gravity="center">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/btn_disconnect"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="0.8"-->
+        <!--android:background="@color/DeepPink"-->
+        <!--android:gravity="center">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/disconnect"
-            android:textColor="@color/White"
-            android:textSize="18dp" />
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="center"-->
+            <!--android:text="@string/disconnect"-->
+            <!--android:textColor="@color/White"-->
+            <!--android:textSize="18dp" />-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/Bold_Gray" />
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1dp"-->
+        <!--android:background="@color/Bold_Gray" />-->
 
 </LinearLayout>

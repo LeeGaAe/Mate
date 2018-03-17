@@ -37,21 +37,7 @@
                             app:civ_border_width="2dp"
                             app:civ_border_color="#FF000000"/>
 
-                    <!--<ImageView-->
-                        <!--android:id="@+id/my_pic"-->
-                        <!--android:layout_width="100dp"-->
-                        <!--android:layout_height="80dp"/>-->
-
                     </LinearLayout>
-
-                    <!--<de.hdodenhof.circleimageview.CircleImageView-->
-                        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-                        <!--android:id="@+id/my_pic"-->
-                        <!--android:layout_width="120dp"-->
-                        <!--android:layout_height="80dp"-->
-                        <!--android:src="@mipmap/ic_launcher_ban"-->
-                        <!--app:civ_border_width="2dp"-->
-                        <!--app:civ_border_color="#FF000000"/>-->
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -198,17 +184,43 @@
                     <!--android:layout_height="1dp"-->
                     <!--android:background="@color/Light_Gray" />-->
 
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="50dp"-->
+                    <!--android:gravity="center_vertical">-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="15dp"-->
+                        <!--android:text="앱 버전"-->
+                        <!--android:textSize="13sp" />-->
+                <!--</LinearLayout>-->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:gravity="center_vertical">
+                    android:background="@color/White"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="15dp"
-                        android:text="앱 버전"
-                        android:textSize="13sp" />
+                        android:text="앱버전"
+                        android:textSize="13dp" />
+
+                    <TextView
+                        android:id="@+id/app_version"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="15dp"
+                        android:textColor="@color/Gray"
+                        android:gravity="right"
+                        android:textSize="12dp" />
+
+
                 </LinearLayout>
 
                 <View

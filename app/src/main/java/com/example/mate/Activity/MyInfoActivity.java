@@ -3,7 +3,6 @@ package com.example.mate.Activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -11,10 +10,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -22,13 +19,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.BitmapCompat;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,11 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,11 +40,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -81,15 +70,14 @@ public class MyInfoActivity extends Activity {
     private FirebaseStorage mStorage = FirebaseStorage.getInstance();
     private StorageReference storageRef = mStorage.getReferenceFromUrl("gs://gamate-4c0ad.appspot.com");
 
-
     private Uri mImageUri;
-
 
     @BindView(R.id.btn_back) LinearLayout mBtnBack;
     @BindView(R.id.top_area) LinearLayout mTopArea;
     @BindView(R.id.btn_check) LinearLayout mBtnCheck;
     @BindView(R.id.btn_disconnect) LinearLayout mBtnDisconnect;
     @BindView(R.id.modify_profile) LinearLayout mModifyProfile;
+    @BindView(R.id.btn_logout) LinearLayout mBtnLogOut;
 
     @BindView(R.id.my_name) TextView mMyName;
     @BindView(R.id.my_email) TextView mMyEmail;
@@ -101,13 +89,10 @@ public class MyInfoActivity extends Activity {
     @BindView(R.id.btn_complete) ImageView mBtnComplete;
     @BindView(R.id.my_pic) CircleImageView mMyPic;
 
-
     String json;
     SignUpVo java;
-
     String PartUid;
-
-
+    String Cropfile;
 
 
     @Override
@@ -132,6 +117,23 @@ public class MyInfoActivity extends Activity {
         json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
 
+
+        mDBRef.child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() == null) {
+                    Glide.with(mContext).load(R.mipmap.ic_launcher_ban).into(mMyPic);
+                } else {
+                    Glide.with(mContext).load(dataSnapshot.getValue().toString()).into(mMyPic);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
         mBtnBack.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +236,20 @@ public class MyInfoActivity extends Activity {
             }
         });
 
+        mBtnLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FirebaseAuth.getInstance().signOut();
+
+                mIntent = new Intent(mContext, LoginActivity.class);
+                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(mIntent);
+                finish();
+
+            }
+        });
+
 
 
         mBtnDisconnect.setOnClickListener(new View.OnClickListener() {
@@ -293,6 +309,7 @@ public class MyInfoActivity extends Activity {
         mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
         startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
 
+        finish();
     }
 
 
@@ -323,27 +340,28 @@ public class MyInfoActivity extends Activity {
 
 
                 final Bundle extra = data.getExtras();
-                String cropfile = Environment.getExternalStorageDirectory().getAbsolutePath()
+                Cropfile = Environment.getExternalStorageDirectory().getAbsolutePath()
                         + "/mate/" + System.currentTimeMillis() + ".jpg";
 
                 if (extra != null) {
 
                     Bitmap photo = extra.getParcelable("data");
-                    Glide.with(mContext).load(cropfile).into(mMyPic);
-                    storeCropImage(photo, cropfile);
+                    Glide.with(mContext).load(Cropfile).into(mMyPic);
+                    storeCropImage(photo, Cropfile);
+
 
                     // 크롭된 이미지 store에 저장
-                    Uri file = Uri.fromFile(new File(cropfile));
-                    StorageReference riversRef = storageRef.child("profile/").child(mUser.getUid() + "/" +file.getLastPathSegment());
+                    final Uri file = Uri.fromFile(new File(Cropfile));
+                    StorageReference riversRef = storageRef.child("profile/").child(mUser.getUid() + "/" + file.getLastPathSegment());
                     UploadTask uploadTask = riversRef.putFile(file);
 
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            Uri uri = taskSnapshot.getDownloadUrl();
+                            mDBRef.child(mUser.getUid()).child("profile").setValue(uri.toString());
+                            mDBRef.child(java.getPartnerVo().getPart_uid()).child("partnerVo").child("part_profile").setValue(uri.toString());
                         }
                     });
 
@@ -439,6 +457,8 @@ public class MyInfoActivity extends Activity {
                 mDBRef.child(mUser.getUid()).child("groupId").setValue(null);
                 mDBRef.child(mUser.getUid()).child("partnerVo").setValue(null);
 
+
+
                 Toast.makeText(mContext, "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
                 mIntent = new Intent(mContext, LoginActivity.class);
@@ -460,7 +480,5 @@ public class MyInfoActivity extends Activity {
         AlertDialog alertDialog = dialog.create();
         alertDialog.show();
     }
-
-
 
 }

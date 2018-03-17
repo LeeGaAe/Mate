@@ -139,12 +139,14 @@
                             android:gravity="center"
                             android:orientation="vertical">
 
-
-                            <ImageView
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                xmlns:app="http://schemas.android.com/apk/res-auto"
                                 android:id="@+id/my_pic"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:src="@drawable/user" />
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                app:civ_border_width="2dp"
+                                app:civ_border_color="#FF000000"/>
+
 
                             <TextView
                                 android:id="@+id/my_name"
@@ -170,12 +172,14 @@
                             android:gravity="center"
                             android:orientation="vertical">
 
-
-                            <ImageView
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                xmlns:app="http://schemas.android.com/apk/res-auto"
                                 android:id="@+id/partner_pic"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:src="@drawable/user" />
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                app:civ_border_width="2dp"
+                                app:civ_border_color="#FF000000"/>
+
 
                             <TextView
                                 android:id="@+id/partner_name"

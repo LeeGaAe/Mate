@@ -1,5 +1,6 @@
 package com.example.mate.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -56,6 +57,7 @@ public class FragmentSetting extends Fragment {
     private StorageReference mStorageRef = mStorage.getReferenceFromUrl("gs://gamate-4c0ad.appspot.com");
 
 
+    private Context mContext;
     private Intent mIntent;
 
     @BindView (R.id.my_name) TextView mMyName;
@@ -65,14 +67,11 @@ public class FragmentSetting extends Fragment {
     @BindView (R.id.btn_pwd) LinearLayout mBtnPwd;
     @BindView (R.id.btn_theme) LinearLayout mBtnTheme;
 
-//    @BindView(R.id.my_pic) ImageView mMyPic;
     @BindView(R.id.my_pic) CircleImageView mMyPic;
 
 
     String json;
     SignUpVo java;
-
-    String profilePath;
 
 
     @Nullable
@@ -100,6 +99,22 @@ public class FragmentSetting extends Fragment {
 
     private void init(){
 
+        mDBRef.child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() == null) {
+                    Glide.with(getContext()).load(R.mipmap.ic_launcher_ban).into(mMyPic);
+                } else {
+                    Glide.with(getContext()).load(dataSnapshot.getValue().toString()).into(mMyPic);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         mMyName.setText(java.getNickname());
         mMyEmail.setText(java.getEmail());
@@ -136,75 +151,5 @@ public class FragmentSetting extends Fragment {
         });
 
 
-
-        StorageReference storageReference =  mStorageRef.child("profile/").child(mUser.getUid() + "/");
-        if (storageReference != null) {
-            Glide.with(this).load(storageReference).into(mMyPic);
-        } else {
-            mMyPic.setImageResource(R.mipmap.ic_launcher_ban);
-        }
-
-
-
     }
-
-    private void getProfile() {
-
-//        StorageReference islandRef = mStorageRef.child("profile/").child(mUser.getUid() +"/");
-
-        Glide.with(this).load(mStorageRef).into(mMyPic);
-
-
-//        Glide.with(this).using(new FirebaseImageLoader()).load(islandRef).into(mMyPic);
-
-//        StorageReference islandRef = mStorageRef.child("profile/").child(mUser.getUid() +"/");
-//
-//        File localFile = File.createTempFile("profile", "jpg");
-//
-//        islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-//            @Override
-//            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-//                // Local temp file has been created
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception exception) {
-//                // Handle any errors
-//            }
-//        });
-
-    }
-
-
-
-//    private void getProfile() {
-//
-//        mDBRef.child(mUser.getUid()).child("ProfileUri").addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                if (dataSnapshot != null) {
-//                    Log.d("lga", "" +   dataSnapshot);
-//                    profilePath = dataSnapshot.getValue().toString();
-////                    Uri.parse(profilePath);
-////
-////                    Bitmap profile = profilePath.get
-//
-//                    mMyPic.setImageURI(Uri.parse(profilePath));
-//
-////                    mMyPic.setImageBitmap(profilePath));
-//
-////                    mMyPic.setImageBitmap(BitmapFactory.decodeFile(profilePath));
-////                    mMyPic.setImageURI(profilePath);
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//    }
 }

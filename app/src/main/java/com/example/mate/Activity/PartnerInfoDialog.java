@@ -19,13 +19,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import Util.PreferenceUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by 가애 on 2018-01-22.
@@ -35,14 +42,16 @@ public class PartnerInfoDialog extends Activity {
 
     private Context mContext;
 
-    @BindView(R.id.partner_name)
-    TextView mTxtPartName;
-    @BindView(R.id.partner_email)
-    TextView mTxtPartEmail;
-    @BindView(R.id.partner_phone)
-    TextView mTxtPartPhone;
-    @BindView(R.id.call)
-    LinearLayout mCall;
+    private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference mDBRef = mDatabase.getReference("user");
+
+    @BindView(R.id.partner_name) TextView mTxtPartName;
+    @BindView(R.id.partner_email) TextView mTxtPartEmail;
+    @BindView(R.id.partner_phone) TextView mTxtPartPhone;
+
+    @BindView(R.id.call) LinearLayout mCall;
+
+    @BindView(R.id.partner_pic) CircleImageView mPartnerPic;
 
     SignUpVo java;
     String tel;
@@ -70,6 +79,22 @@ public class PartnerInfoDialog extends Activity {
         mTxtPartName.setText(java.getPartnerVo().getPart_name());
         mTxtPartEmail.setText(java.getPartnerVo().getPart_email());
         mTxtPartPhone.setText(java.getPartnerVo().getPart_phone_num());
+
+        mDBRef.child(java.getPartnerVo().getPart_uid()).child("partnerVo").child("part_profile").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    Glide.with(mContext).load(R.mipmap.ic_launcher_ban).into(mPartnerPic);
+                } else {
+                    Glide.with(mContext).load(dataSnapshot.getValue().toString()).into(mPartnerPic);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         mCall.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,11 @@ import com.example.mate.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.Calendar;
@@ -32,6 +36,7 @@ import Util.DateUtils;
 import Util.PreferenceUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by 가애 on 2018-03-01.
@@ -48,8 +53,8 @@ public class FragmentHome extends Fragment {
     @BindView(R.id.partner_profile) LinearLayout mPartProfile;
     @BindView(R.id.btn_date_picker) LinearLayout mBtnDatePicker;
 
-    @BindView(R.id.my_pic) ImageView mMyPic;
-    @BindView(R.id.partner_pic) ImageView mPartnerPic;
+    @BindView(R.id.my_pic) CircleImageView mMyPic;
+    @BindView(R.id.partner_pic) CircleImageView mPartnerPic;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
@@ -85,6 +90,41 @@ public class FragmentHome extends Fragment {
 
     private void init() {
 
+        mDBRef.child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() == null ) {
+                    Glide.with(getContext()).load(R.mipmap.ic_launcher_ban).into(mMyPic);
+                } else {
+                    Glide.with(getContext()).load(dataSnapshot.getValue().toString()).into(mMyPic);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        mDBRef.child(mUser.getUid()).child("partnerVo").child("part_profile").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null ) {
+                    Glide.with(getContext()).load(R.mipmap.ic_launcher_ban).into(mPartnerPic);
+                } else {
+                    Glide.with(getContext()).load(dataSnapshot.getValue().toString()).into(mPartnerPic);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
         if(!TextUtils.isEmpty(java.getStartDate())){
 
             mSelectStartDay.setText("우리" + "\n" + getDatingPeriod(java.getStartDate()) + "\n" + "일째 사랑중");
@@ -117,9 +157,6 @@ public class FragmentHome extends Fragment {
             }
         });
 
-
-        Glide.with(this).load(R.mipmap.ic_launcher_ban).apply(new RequestOptions().circleCrop().centerCrop()).into(mMyPic);
-        Glide.with(this).load(R.mipmap.ic_launcher_ban).apply(new RequestOptions().circleCrop().centerCrop()).into(mPartnerPic);
 
     }
 

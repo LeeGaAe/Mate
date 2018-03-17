@@ -27,9 +27,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.Activity.Vo.DiaryVo;
 import com.example.mate.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,9 +40,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Calendar;
 
 import Util.Const;
@@ -61,6 +69,8 @@ public class DiaryWriteActivity extends Activity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
     private FirebaseUser mUser;
+    private FirebaseStorage mStorage = FirebaseStorage.getInstance();
+    private StorageReference storageRef = mStorage.getReferenceFromUrl("gs://gamate-4c0ad.appspot.com");
 
     @BindView(R.id.top_area) LinearLayout mTopArea;
     @BindView(R.id.ll) LinearLayout mll;
@@ -74,10 +84,6 @@ public class DiaryWriteActivity extends Activity {
     @BindView(R.id.txt_diary_date) TextView mDiaryDate;
 
     @BindView(R.id.img1) ImageView mImage1;
-    @BindView(R.id.img2) ImageView mImage2;
-    @BindView(R.id.img3) ImageView mImage3;
-    @BindView(R.id.img4) ImageView mImage4;
-    @BindView(R.id.img5) ImageView mImage5;
     @BindView(R.id.btn_camera_add) ImageView mBtnCameraAdd;
 
     private int mYear, mMonth, mDay;
@@ -334,25 +340,72 @@ public class DiaryWriteActivity extends Activity {
                     return;
                 }
 
+
                 final Bundle extra = data.getExtras();
-//                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BanDiaryImage/" + System.currentTimeMillis() + ".jpg";
+                String cropfile = Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/mate/" + System.currentTimeMillis() + ".jpg";
 
                 if (extra != null) {
+
                     Bitmap photo = extra.getParcelable("data");
+                    Glide.with(mContext).load(cropfile).into(mImage1);
+                    storeCropImage(photo, cropfile); //크롭된 이미지 갤러리에 저장
 
-                    mImage1.setImageBitmap(photo);
+                    // 크롭된 이미지 갤러리에서 가져와 store에 저장
+                    Uri file = Uri.fromFile(new File(cropfile));
+                    StorageReference riversRef = storageRef.child("diary/").child(GroupID + "/" +file.getLastPathSegment());
+                    UploadTask uploadTask = riversRef.putFile(file);
 
-
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        }
+                    });
 
                     break;
                 }
 
+
                 File f = new File(mImageUri.getPath());
+
                 if (f.exists()) {
+
                     f.delete();
+
                 }
         }
     }
+
+    //크롭한 이미지 갤러리에 저장
+    private void storeCropImage(Bitmap bitmap, String cropfile){
+
+        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/mate";
+        File directory_mate = new File(dirPath);
+
+        if (!directory_mate.exists())
+            directory_mate.mkdir();
+
+        File copyFile = new File(cropfile);
+        BufferedOutputStream out = null;
+
+        try{
+            copyFile.createNewFile();
+            out = new BufferedOutputStream(new FileOutputStream(copyFile));
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,out);
+
+            out.flush();
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
 
     private void intentCamera() {

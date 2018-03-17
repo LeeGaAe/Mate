@@ -15,6 +15,7 @@ public class PartnerVo {
     public String part_email;
     public String part_fcmToken;
     public String part_uid;
+    public String part_profile;
 
 
     public PartnerVo() {
@@ -67,5 +68,13 @@ public class PartnerVo {
 
     public void setPart_uid(String part_uid) {
         this.part_uid = part_uid;
+    }
+
+    public String getPart_profile() {
+        return part_profile;
+    }
+
+    public void setPart_profile(String part_profile) {
+        this.part_profile = part_profile;
     }
 }
