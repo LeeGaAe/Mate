@@ -42,14 +42,11 @@ public class DiaryMoreDialog extends Activity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
 
-    @BindView(R.id.modify)
-    LinearLayout mModify;
+    @BindView(R.id.modify) LinearLayout mModify;
+    @BindView(R.id.delete) LinearLayout mDelete;
 
-    @BindView(R.id.delete)
-    LinearLayout mDelete;
+    @BindView(R.id.postingId) TextView mPostingId;
 
-    @BindView(R.id.postingId)
-    TextView mPostingId;
 
 
     @Override
@@ -66,7 +63,6 @@ public class DiaryMoreDialog extends Activity {
 
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference().child("diary");
-
 
         mPostingId.setText(mIntent.getStringExtra("postingId"));
 

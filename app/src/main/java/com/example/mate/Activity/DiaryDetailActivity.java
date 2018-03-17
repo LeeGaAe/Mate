@@ -42,32 +42,17 @@ public class DiaryDetailActivity extends Activity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
 
-    @BindView(R.id.top_area)
-    LinearLayout mTopArea;
+    @BindView(R.id.top_area) LinearLayout mTopArea;
+    @BindView(R.id.ll) LinearLayout mll;
+    @BindView(R.id.btn_cancel) LinearLayout mBtnCancel;
+    @BindView(R.id.btn_more) LinearLayout mBtnMore;
 
-    @BindView(R.id.ll)
-    LinearLayout mll;
+    @BindView(R.id.diary_title) TextView mDiaryTitle;
+    @BindView(R.id.diary_content) TextView mDiaryContent;
+    @BindView(R.id.txt_diary_date) TextView mDiaryDate;
+    @BindView(R.id.postingId) TextView mPostingId;
 
-    @BindView(R.id.btn_cancel)
-    LinearLayout mBtnCancel;
-
-    @BindView(R.id.btn_more)
-    LinearLayout mBtnMore;
-
-    @BindView(R.id.postingId)
-    TextView mPostingId;
-
-    @BindView(R.id.diary_title)
-    TextView mDiaryTitle;
-
-    @BindView(R.id.diary_content)
-    TextView mDiaryContent;
-
-    @BindView(R.id.txt_diary_date)
-    TextView mDiaryDate;
-
-    @BindView(R.id.img)
-    ImageView mImage;
+    @BindView(R.id.img) ImageView mImage;
 
     private int mYear, mMonth, mDay;
 
@@ -93,8 +78,8 @@ public class DiaryDetailActivity extends Activity {
 
         mPostingId.setText(mIntent.getStringExtra("postingId"));
 
-
         mDBRef.child(mPostingId.getText().toString()).child("photoUri").addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -118,6 +103,7 @@ public class DiaryDetailActivity extends Activity {
                 onBackPressed();
             }
         });
+
         mBtnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

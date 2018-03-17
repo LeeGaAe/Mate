@@ -8,16 +8,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.mate.Activity.DiaryDetailActivity;
 import com.example.mate.Activity.Vo.DiaryVo;
 import com.example.mate.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by 가애 on 2017-12-28.
@@ -27,6 +33,11 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
 
     private Context mContext;
     private Intent mIntent;
+
+    FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+    DatabaseReference mDBRef = mDatabase.getReference().child("user");
+    FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+
     private ArrayList<DiaryVo> mItems = new ArrayList<>();
 
     public DiaryPageAdapter(Context context) {
@@ -50,13 +61,32 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
     }
 
     @Override
-    public void onBindViewHolder(ItemViewHolder holder, final int position) {
+    public void onBindViewHolder(final ItemViewHolder holder, final int position) {
 
         holder.mTitle.setText(mItems.get(position).getTitle());
         holder.mWriter.setText(mItems.get(position).getWriterId());
         holder.mDate.setText(mItems.get(position).getDate());
 
-//        holder.itemView.setTag(mItems);
+        mDBRef.child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+
+                    Glide.with(mContext).load(R.mipmap.ic_launcher_ban).into(holder.mMyPic);
+
+                } else {
+                    Glide.with(mContext).load(dataSnapshot.getValue().toString()).into(holder.mMyPic);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
     }
 
     @Override
@@ -70,6 +100,7 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
         private TextView mTitle;
         private TextView mWriter;
         private TextView mDate;
+        private CircleImageView mMyPic;
 
 
         public ItemViewHolder(View view) {
@@ -80,6 +111,8 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
             mTitle = (TextView) itemView.findViewById(R.id.diary_title);
             mWriter = (TextView) itemView.findViewById(R.id.writer);
             mDate = (TextView) itemView.findViewById(R.id.date);
+            mMyPic = (CircleImageView) itemView.findViewById(R.id.my_pic);
+
 
         }
 

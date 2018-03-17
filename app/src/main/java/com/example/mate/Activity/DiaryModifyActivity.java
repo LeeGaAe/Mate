@@ -5,15 +5,19 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mate.Activity.Vo.DiaryVo;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
@@ -43,48 +47,30 @@ public class DiaryModifyActivity extends Activity {
     private Context mContext;
     private Intent mIntent;
 
-    //    private Uri mImageUri;
-//
-    private FirebaseDatabase mDatabase;
-    private DatabaseReference mDBRef;
-    private FirebaseUser mUser;
+    private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference mDBRef = mDatabase.getReference();
+    private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-    @BindView(R.id.top_area)
-    LinearLayout mTopArea;
+    @BindView(R.id.top_area) LinearLayout mTopArea;
+    @BindView(R.id.btn_cancel) LinearLayout mBtnCancel;
+    @BindView(R.id.btn_check) LinearLayout mBtnChk;
+    @BindView(R.id.btn_date_dialog) LinearLayout mBtnDateDialog;
 
-    @BindView(R.id.btn_cancel)
-    LinearLayout mBtnCancel;
+    @BindView(R.id.edit_title) EditText mEditTitle;
+    @BindView(R.id.edit_content) EditText mEditContent;
 
-    @BindView(R.id.btn_check)
-    LinearLayout mBtnChk;
+    @BindView(R.id.txt_diary_date) TextView mDiaryDate;
+    @BindView(R.id.postingId) TextView mPostingId;
 
-    @BindView(R.id.btn_date_dialog)
-    LinearLayout mBtnDateDialog;
-
-    @BindView(R.id.edit_title)
-    EditText mEditTitle;
-
-    @BindView(R.id.edit_content)
-    EditText mEditContent;
-
-    @BindView(R.id.txt_diary_date)
-    TextView mDiaryDate;
-
-//    @BindView(R.id.img)
-//    ImageView mImage;
-
-    @BindView(R.id.postingId)
-    TextView mPostingId;
-
-//    @BindView(R.id.ll)
-//    LinearLayout mll;
-
+    @BindView(R.id.img_place) LinearLayout mImagePlace;
+    @BindView(R.id.img) ImageView mImage;
 
     private int mYear, mMonth, mDay;
     private String ThemeColor;
     private InputMethodManager imm;
 
     String GroupID;
+    String photoUri;
 
 
     @Override
@@ -97,16 +83,35 @@ public class DiaryModifyActivity extends Activity {
 
         mIntent = getIntent();
 
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference();
-        mUser = FirebaseAuth.getInstance().getCurrentUser();
-
         search();
 
         mPostingId.setText(mIntent.getStringExtra("postingId"));
 
         ThemeColor = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.APP_THEME_COLOR, Const.APP_THEME_COLORS[0]);
         mTopArea.setBackgroundColor(Color.parseColor(ThemeColor));
+
+        mDBRef.child("diary").child(mPostingId.getText().toString()).child("photoUri").addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                photoUri = dataSnapshot.getValue().toString();
+
+                if (dataSnapshot.getValue() != null) {
+
+                    mImagePlace.setVisibility(View.VISIBLE);
+                    Glide.with(mContext).load(dataSnapshot.getValue().toString()).into(mImage);
+
+                } else {
+                    mImage.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         Calendar cal = Calendar.getInstance();
         mYear = cal.get(Calendar.YEAR);
@@ -131,20 +136,20 @@ public class DiaryModifyActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-
-
                 String postingId = mPostingId.getText().toString();
 
                 String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
                 SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
 
                 DiaryVo vo = new DiaryVo();
+
                 vo.setPostingId(postingId);
                 vo.setTitle(mEditTitle.getText().toString());
                 vo.setContent(mEditContent.getText().toString());
                 vo.setDate(mDiaryDate.getText().toString());
                 vo.setWriterId(java.getNickname());
                 vo.setGroupID(GroupID);
+                vo.setPhotoUri(photoUri);
 
                 mDBRef.child("diary").child(postingId).setValue(vo);
                 Toast.makeText(mContext, "완료되었습니다.", Toast.LENGTH_SHORT).show();
@@ -153,7 +158,6 @@ public class DiaryModifyActivity extends Activity {
                 mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(mIntent);
                 finish();
-
 
             }
         });

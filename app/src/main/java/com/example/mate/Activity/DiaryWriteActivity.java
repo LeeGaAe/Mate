@@ -2,18 +2,15 @@ package com.example.mate.Activity;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -33,7 +30,6 @@ import com.bumptech.glide.Glide;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.Activity.Vo.DiaryVo;
 import com.example.mate.R;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,9 +43,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Calendar;
 
 import Util.Const;
@@ -66,7 +60,6 @@ public class DiaryWriteActivity extends Activity {
     private Context mContext;
     private Intent mIntent;
 
-    private Uri mImageUri;
     private Uri uri;
 
     private FirebaseDatabase mDatabase;
@@ -360,93 +353,32 @@ public class DiaryWriteActivity extends Activity {
                 mImagePlace.setVisibility(View.VISIBLE);
                 mImage1.setVisibility(View.VISIBLE);
 
+                final String cameraPath = getPath(data.getData());
 
-//
-//                mIntent = new Intent("com.android.camera.action.CROP");
-//                mIntent.setDataAndType(mImageUri, "image/*");
-//                mIntent.putExtra("scale", ImageView.ScaleType.FIT_XY);
-//                mIntent.putExtra("return-data", true);
-//                startActivityForResult(mIntent, Const.CROP_PICTURE);
-//
-//                break;
-//
-//            case Const.CROP_PICTURE:
-//
-//                if ( resultCode != Activity.RESULT_OK) {
-//                    return;
-//                }
-//
-//
-//                final Bundle extra = data.getExtras();
-//                final String cropfile = Environment.getExternalStorageDirectory().getAbsolutePath()
-//                        + "/mate/" + System.currentTimeMillis() + ".jpg";
-//
-//                if (extra != null) {
-//
-//                    Bitmap photo = extra.getParcelable("data");
-//                    storeCropImage(photo, cropfile); //크롭된 이미지 갤러리에 저장
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                Glide.with(mContext).load(R.raw.loading_black).into(mLoading);
 
-//                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//                    Glide.with(mContext).load(R.raw.loading_black).into(mLoading);
-//
-//                    // 크롭된 이미지 store에 저장
-//                    final Uri file = Uri.fromFile(new File(cropfile));
-//                    StorageReference riversRef = storageRef.child("diary/").child(GroupID + "/" + file.getLastPathSegment());
-//                    UploadTask uploadTask = riversRef.putFile(file);
-//
-//                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                        @Override
-//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                            Glide.with(mContext).load(cropfile).into(mImage1);
-//                            uri = taskSnapshot.getDownloadUrl();
-//
-//                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//                            Glide.with(mContext).clear(mLoading);
-//
-//                        }
-//                    });
+                // 크롭된 이미지 store에 저장
+                final Uri file2 = Uri.fromFile(new File(cameraPath));
+                StorageReference riversRef2 = storageRef.child("diary/").child(GroupID + "/" + file2.getLastPathSegment());
+                UploadTask uploadTask2 = riversRef2.putFile(file2);
 
-//                    break;
-//                }
+                uploadTask2.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Glide.with(mContext).load(cameraPath).into(mImage1);
 
-//
-//                File f = new File(mImageUri.getPath());
-//
-//                if (f.exists()) {
-//
-//                    f.delete();
-//
-//                }
+                        uri = taskSnapshot.getDownloadUrl();
+
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        Glide.with(mContext).clear(mLoading);
+
+                    }
+                });
+
+                break;
         }
     }
-
-
-    //크롭한 이미지 갤러리에 저장
-    private void storeCropImage(Bitmap bitmap, String cropfile){
-
-        String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/mate";
-        File directory_mate = new File(dirPath);
-
-        if (!directory_mate.exists())
-            directory_mate.mkdir();
-
-        File copyFile = new File(cropfile);
-        BufferedOutputStream out = null;
-
-        try{
-            copyFile.createNewFile();
-            out = new BufferedOutputStream(new FileOutputStream(copyFile));
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,out);
-
-            out.flush();
-            out.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
 
         public String getPath(Uri uri){
 
@@ -465,13 +397,8 @@ public class DiaryWriteActivity extends Activity {
 
     private void intentCamera() {
 
-        mIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-
-        String url = "tmp_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-        mImageUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), url));
-
-        mIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-        startActivityForResult(mIntent, Const.TAKE_PICTURE_CAMERA);
+        mIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(mIntent,Const.TAKE_PICTURE_CAMERA);
 
     }
 

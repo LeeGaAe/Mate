@@ -45,22 +45,17 @@ public class DiaryPageActivity extends Activity {
     private Context mContext;
     private Intent mIntent;
 
-    private FirebaseDatabase mDatabase;
-    private DatabaseReference mDBRef;
-    private FirebaseUser mUser;
+    private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference mDBRef = mDatabase.getReference();
+    private FirebaseUser  mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-    @BindView(R.id.layout_list)
-    LinearLayout mLayList;
-    @BindView(R.id.layout_empty)
-    LinearLayout mLayEmpty;
-    @BindView(R.id.top_area)
-    LinearLayout mTopArea;
-    @BindView(R.id.btn_back)
-    LinearLayout mBtnBack;
-    @BindView(R.id.btn_add)
-    LinearLayout mBtnAdd;
-    @BindView(R.id.list_diary)
-    RecyclerView mLv_Diary;
+    @BindView(R.id.layout_list) LinearLayout mLayList;
+    @BindView(R.id.layout_empty) LinearLayout mLayEmpty;
+    @BindView(R.id.top_area) LinearLayout mTopArea;
+    @BindView(R.id.btn_back) LinearLayout mBtnBack;
+    @BindView(R.id.btn_add) LinearLayout mBtnAdd;
+
+    @BindView(R.id.list_diary) RecyclerView mLv_Diary;
 
     private DiaryPageAdapter adapter;
     private ArrayList<DiaryVo> mItems = new ArrayList<>();
@@ -68,7 +63,6 @@ public class DiaryPageActivity extends Activity {
     private String ThemeColor;
     private String GroupID;
 
-//    LinearLayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,10 +71,6 @@ public class DiaryPageActivity extends Activity {
 
         ButterKnife.bind(this);
         mContext = this;
-
-        mDatabase = FirebaseDatabase.getInstance();
-        mDBRef = mDatabase.getReference();
-        mUser = FirebaseAuth.getInstance().getCurrentUser();
 
         search();
 
@@ -146,24 +136,18 @@ public class DiaryPageActivity extends Activity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-
-
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
