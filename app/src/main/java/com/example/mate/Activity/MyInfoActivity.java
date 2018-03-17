@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.mate.Activity.Vo.PartnerVo;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -309,7 +310,8 @@ public class MyInfoActivity extends Activity {
         mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
         startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
 
-        finish();
+        onBackPressed();
+
     }
 
 
@@ -379,20 +381,6 @@ public class MyInfoActivity extends Activity {
         }
     }
 
-//    public String getPath(Uri uri){
-//
-//        String [] proj = { MediaStore.Images.Media.DATA };
-//        CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
-//
-//        Cursor cursor = cursorLoader.loadInBackground ();
-//        int index = cursor.getColumnIndexOrThrow (MediaStore.Images.Media.DATA);
-//
-//        cursor.moveToFirst();
-//
-//        return cursor.getString(index);
-//
-//    }
-
 
     //크롭한 이미지 갤러리에 저장
     private void storeCropImage(Bitmap bitmap, String cropfile){
@@ -456,7 +444,6 @@ public class MyInfoActivity extends Activity {
 
                 mDBRef.child(mUser.getUid()).child("groupId").setValue(null);
                 mDBRef.child(mUser.getUid()).child("partnerVo").setValue(null);
-
 
 
                 Toast.makeText(mContext, "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();

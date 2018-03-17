@@ -129,6 +129,7 @@ public class ChatActivity extends Activity {
 
     private void init() {
 
+
         mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mate.Activity.Adapter.DiaryPageAdapter;
 import com.example.mate.Activity.Vo.DiaryVo;
 import com.example.mate.R;
@@ -20,6 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -36,8 +38,6 @@ public class DiaryDetailActivity extends Activity {
 
     private Context mContext;
     private Intent mIntent;
-
-    private Uri mImageUri;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
@@ -92,6 +92,25 @@ public class DiaryDetailActivity extends Activity {
         mTopArea.setBackgroundColor(Color.parseColor(ThemeColor));
 
         mPostingId.setText(mIntent.getStringExtra("postingId"));
+
+
+        mDBRef.child(mPostingId.getText().toString()).child("photoUri").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    mImage.setVisibility(View.VISIBLE);
+                    Glide.with(mContext).load(dataSnapshot.getValue().toString()).into(mImage);
+                } else {
+                    mImage.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
 
         mBtnCancel.setOnClickListener(new View.OnClickListener() {
             @Override

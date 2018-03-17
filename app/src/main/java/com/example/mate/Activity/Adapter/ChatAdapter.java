@@ -6,12 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.mate.Activity.Vo.ChatVo;
 import com.example.mate.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by 가애 on 2017-12-28.
@@ -57,7 +63,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ItemViewHolder
         holder.mMessage.setText(mItems.get(position).getMessage());
         holder.mTime.setText(mSimpleDateFormat.format(mItems.get(position).getTime()));
 
-//        holder.itemView.setTag(mItems);
+
     }
 
     @Override
@@ -69,12 +75,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ItemViewHolder
 
         private TextView mMessage;
         private TextView mTime;
+        private CircleImageView mMyPic;
 
         public ItemViewHolder(View view) {
             super(view);
 
             mMessage = (TextView) itemView.findViewById(R.id.message);
             mTime = (TextView) itemView.findViewById(R.id.time);
+//            mMyPic = (CircleImageView) itemView.findViewById(R.id.my_pic);
 
         }
     }

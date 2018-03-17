@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
@@ -65,6 +67,7 @@ public class DiaryWriteActivity extends Activity {
     private Intent mIntent;
 
     private Uri mImageUri;
+    private Uri uri;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDBRef;
@@ -85,13 +88,20 @@ public class DiaryWriteActivity extends Activity {
 
     @BindView(R.id.img1) ImageView mImage1;
     @BindView(R.id.btn_camera_add) ImageView mBtnCameraAdd;
+    @BindView(R.id.loading) ImageView mLoading;
 
     private int mYear, mMonth, mDay;
 
     private String ThemeColor;
     private String GroupID;
+    private String postingId;
+
+    String json;
+    SignUpVo java;
 
     private InputMethodManager imm;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +114,11 @@ public class DiaryWriteActivity extends Activity {
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference();
         mUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
+        java = new Gson().fromJson(json, SignUpVo.class);
+
+        postingId = mDBRef.push().getKey();
 
         search();
 
@@ -137,24 +152,21 @@ public class DiaryWriteActivity extends Activity {
         mBtnChk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String postingId = mDBRef.push().getKey();
-
-                String json = PreferenceUtil.getInstance(getApplicationContext()).getString(PreferenceUtil.MY_INFO, "");
-                SignUpVo java = new Gson().fromJson(json, SignUpVo.class);
-
                 DiaryVo vo = new DiaryVo();
+
                 vo.setPostingId(postingId);
                 vo.setTitle(mEditTitle.getText().toString());
                 vo.setContent(mEditContent.getText().toString());
                 vo.setDate(mDiaryDate.getText().toString());
                 vo.setWriterId(java.getNickname());
                 vo.setGroupID(GroupID);
+                vo.setPhotoUri(uri.toString());
 
                 mDBRef.child("diary").child(postingId).setValue(vo);
                 Toast.makeText(mContext, "완료되었습니다.", Toast.LENGTH_SHORT).show();
 
                 onBackPressed();
+
             }
         });
 
@@ -318,7 +330,29 @@ public class DiaryWriteActivity extends Activity {
                 mImagePlace.setVisibility(View.VISIBLE);
                 mImage1.setVisibility(View.VISIBLE);
 
-                mImageUri = data.getData();
+                final String path = getPath(data.getData());
+
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                Glide.with(mContext).load(R.raw.loading_black).into(mLoading);
+
+                // 크롭된 이미지 store에 저장
+                final Uri file = Uri.fromFile(new File(path));
+                StorageReference riversRef = storageRef.child("diary/").child(GroupID + "/" + file.getLastPathSegment());
+                UploadTask uploadTask = riversRef.putFile(file);
+
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Glide.with(mContext).load(path).into(mImage1);
+                        uri = taskSnapshot.getDownloadUrl();
+
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        Glide.with(mContext).clear(mLoading);
+
+                    }
+                });
+
+                break;
 
 
             case Const.TAKE_PICTURE_CAMERA:
@@ -326,59 +360,66 @@ public class DiaryWriteActivity extends Activity {
                 mImagePlace.setVisibility(View.VISIBLE);
                 mImage1.setVisibility(View.VISIBLE);
 
-                mIntent = new Intent("com.android.camera.action.CROP");
-                mIntent.setDataAndType(mImageUri, "image/*");
-                mIntent.putExtra("scale", ImageView.ScaleType.FIT_XY);
-                mIntent.putExtra("return-data", true);
-                startActivityForResult(mIntent, Const.CROP_PICTURE);
 
-                break;
+//
+//                mIntent = new Intent("com.android.camera.action.CROP");
+//                mIntent.setDataAndType(mImageUri, "image/*");
+//                mIntent.putExtra("scale", ImageView.ScaleType.FIT_XY);
+//                mIntent.putExtra("return-data", true);
+//                startActivityForResult(mIntent, Const.CROP_PICTURE);
+//
+//                break;
+//
+//            case Const.CROP_PICTURE:
+//
+//                if ( resultCode != Activity.RESULT_OK) {
+//                    return;
+//                }
+//
+//
+//                final Bundle extra = data.getExtras();
+//                final String cropfile = Environment.getExternalStorageDirectory().getAbsolutePath()
+//                        + "/mate/" + System.currentTimeMillis() + ".jpg";
+//
+//                if (extra != null) {
+//
+//                    Bitmap photo = extra.getParcelable("data");
+//                    storeCropImage(photo, cropfile); //크롭된 이미지 갤러리에 저장
 
-            case Const.CROP_PICTURE:
+//                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                    Glide.with(mContext).load(R.raw.loading_black).into(mLoading);
+//
+//                    // 크롭된 이미지 store에 저장
+//                    final Uri file = Uri.fromFile(new File(cropfile));
+//                    StorageReference riversRef = storageRef.child("diary/").child(GroupID + "/" + file.getLastPathSegment());
+//                    UploadTask uploadTask = riversRef.putFile(file);
+//
+//                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                            Glide.with(mContext).load(cropfile).into(mImage1);
+//                            uri = taskSnapshot.getDownloadUrl();
+//
+//                            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                            Glide.with(mContext).clear(mLoading);
+//
+//                        }
+//                    });
 
-                if ( resultCode != Activity.RESULT_OK) {
-                    return;
-                }
+//                    break;
+//                }
 
-
-                final Bundle extra = data.getExtras();
-                String cropfile = Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + "/mate/" + System.currentTimeMillis() + ".jpg";
-
-                if (extra != null) {
-
-                    Bitmap photo = extra.getParcelable("data");
-                    Glide.with(mContext).load(cropfile).into(mImage1);
-                    storeCropImage(photo, cropfile); //크롭된 이미지 갤러리에 저장
-
-                    // 크롭된 이미지 갤러리에서 가져와 store에 저장
-                    Uri file = Uri.fromFile(new File(cropfile));
-                    StorageReference riversRef = storageRef.child("diary/").child(GroupID + "/" +file.getLastPathSegment());
-                    UploadTask uploadTask = riversRef.putFile(file);
-
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        }
-                    });
-
-                    break;
-                }
-
-
-                File f = new File(mImageUri.getPath());
-
-                if (f.exists()) {
-
-                    f.delete();
-
-                }
+//
+//                File f = new File(mImageUri.getPath());
+//
+//                if (f.exists()) {
+//
+//                    f.delete();
+//
+//                }
         }
     }
+
 
     //크롭한 이미지 갤러리에 저장
     private void storeCropImage(Bitmap bitmap, String cropfile){
@@ -406,6 +447,20 @@ public class DiaryWriteActivity extends Activity {
 
     }
 
+
+        public String getPath(Uri uri){
+
+        String [] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader cursorLoader = new CursorLoader(this, uri, proj, null, null, null);
+
+        Cursor cursor = cursorLoader.loadInBackground ();
+        int index = cursor.getColumnIndexOrThrow (MediaStore.Images.Media.DATA);
+
+        cursor.moveToFirst();
+
+        return cursor.getString(index);
+
+    }
 
 
     private void intentCamera() {

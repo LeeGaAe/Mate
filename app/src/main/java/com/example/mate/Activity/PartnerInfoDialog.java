@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,6 +46,7 @@ public class PartnerInfoDialog extends Activity {
 
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference mDBRef = mDatabase.getReference("user");
+    private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
 
     @BindView(R.id.partner_name) TextView mTxtPartName;
     @BindView(R.id.partner_email) TextView mTxtPartEmail;
@@ -80,7 +83,7 @@ public class PartnerInfoDialog extends Activity {
         mTxtPartEmail.setText(java.getPartnerVo().getPart_email());
         mTxtPartPhone.setText(java.getPartnerVo().getPart_phone_num());
 
-        mDBRef.child(java.getPartnerVo().getPart_uid()).child("partnerVo").child("part_profile").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDBRef.child(mUser.getUid()).child("partnerVo").child("part_profile").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
