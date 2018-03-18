@@ -62,7 +62,6 @@ public class ChatActivity extends Activity {
     private static final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
     private static final String SERVER_KEY = "AAAAncoMAbs:APA91bEMG0RBUBtVX4pqRWzXHjCRmu9JPaqvPbVb-bSnAH4wg3WdwyVDWC7jWtXyPu7EWiYdpuEEknfVN-zWb07CQCnCggIgmGEBOquAjjRDQNFzVAS-kHt0-MSJwLvcRPuN114DlNWf";
 
-
     private Context mContext;
 
     private FirebaseDatabase mDatabase;
@@ -97,6 +96,7 @@ public class ChatActivity extends Activity {
 
     String groupID;
     String partnerFCM;
+    String Profile;
 
 
     LinearLayoutManager mLayoutManager;
@@ -153,9 +153,9 @@ public class ChatActivity extends Activity {
                     vo.setTime(time);
                     vo.setEmail(email);
                     vo.setGroupId(groupID);
+                    vo.setUserPhotoUrl(Profile);
 
                     mDBRef.child("chat").push().setValue(vo);
-
                 }
 
 
@@ -179,7 +179,7 @@ public class ChatActivity extends Activity {
                 if (vo.getGroupId().equals(groupID)) {
                     mItems.add(vo);
 
-                    adapter = new ChatAdapter(mItems, email);
+                    adapter = new ChatAdapter(getApplicationContext(), mItems, email);
                     mChatting.setAdapter(adapter);
                     mChatting.scrollToPosition(mItems.size() - 1);
 
@@ -272,6 +272,25 @@ public class ChatActivity extends Activity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 groupID = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference profile = mDBRef.child("user").child(mUser.getUid()).child("profile");
+        profile.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() == null) {
+                    Profile = "";
+                } else {
+                    Profile = dataSnapshot.getValue().toString();
+                }
+
             }
 
             @Override

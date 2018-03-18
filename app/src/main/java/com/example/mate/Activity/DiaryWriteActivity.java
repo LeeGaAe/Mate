@@ -87,6 +87,7 @@ public class DiaryWriteActivity extends Activity {
 
     private String ThemeColor;
     private String GroupID;
+    private String Profile;
     private String postingId;
 
     String json;
@@ -153,7 +154,13 @@ public class DiaryWriteActivity extends Activity {
                 vo.setDate(mDiaryDate.getText().toString());
                 vo.setWriterId(java.getNickname());
                 vo.setGroupID(GroupID);
-                vo.setPhotoUri(uri.toString());
+                vo.setWriterProfileUri(Profile);
+
+                if (uri == null) {
+                    vo.setPhotoUri("");
+                } else {
+                    vo.setPhotoUri(uri.toString());
+                }
 
                 mDBRef.child("diary").child(postingId).setValue(vo);
                 Toast.makeText(mContext, "완료되었습니다.", Toast.LENGTH_SHORT).show();
@@ -328,7 +335,6 @@ public class DiaryWriteActivity extends Activity {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Glide.with(mContext).load(R.raw.loading_black).into(mLoading);
 
-                // 크롭된 이미지 store에 저장
                 final Uri file = Uri.fromFile(new File(path));
                 StorageReference riversRef = storageRef.child("diary/").child(GroupID + "/" + file.getLastPathSegment());
                 UploadTask uploadTask = riversRef.putFile(file);
@@ -358,7 +364,6 @@ public class DiaryWriteActivity extends Activity {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Glide.with(mContext).load(R.raw.loading_black).into(mLoading);
 
-                // 크롭된 이미지 store에 저장
                 final Uri file2 = Uri.fromFile(new File(cameraPath));
                 StorageReference riversRef2 = storageRef.child("diary/").child(GroupID + "/" + file2.getLastPathSegment());
                 UploadTask uploadTask2 = riversRef2.putFile(file2);
@@ -417,6 +422,25 @@ public class DiaryWriteActivity extends Activity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 GroupID = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference profile = mDBRef.child("user").child(mUser.getUid()).child("profile");
+        profile.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() == null) {
+                    Profile = "";
+                } else {
+                    Profile = dataSnapshot.getValue().toString();
+                }
+
             }
 
             @Override

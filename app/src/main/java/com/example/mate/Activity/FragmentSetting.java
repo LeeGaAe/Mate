@@ -66,6 +66,7 @@ public class FragmentSetting extends Fragment {
     @BindView (R.id.more_set) LinearLayout mBtnSet;
     @BindView (R.id.btn_pwd) LinearLayout mBtnPwd;
     @BindView (R.id.btn_theme) LinearLayout mBtnTheme;
+    @BindView (R.id.notice) LinearLayout mBtnNotice;
 
     @BindView(R.id.my_pic) CircleImageView mMyPic;
 
@@ -147,6 +148,14 @@ public class FragmentSetting extends Fragment {
             public void onClick(View v) {
                 mIntent = new Intent(getActivity(), ThemeActivity.class);
                 getActivity().startActivityForResult(mIntent,Const.REQUEST_THEME_SET);
+            }
+        });
+
+        mBtnNotice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mIntent = new Intent(getActivity(), NoticeActivity.class);
+                startActivity(mIntent);
             }
         });
 

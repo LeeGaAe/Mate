@@ -112,13 +112,12 @@
                         android:gravity="center"
                         android:orientation="vertical">
 
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            xmlns:app="http://schemas.android.com/apk/res-auto"
+                        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                             android:id="@+id/my_pic"
                             android:layout_width="130dp"
                             android:layout_height="130dp"
-                            app:civ_border_width="1dp"
-                            app:civ_border_color="@color/Black"/>
+                            app:civ_border_color="@color/Black"
+                            app:civ_border_width="1dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -169,19 +168,19 @@
                             </LinearLayout>
 
                             <!--<LinearLayout-->
-                                <!--android:layout_width="match_parent"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:layout_marginBottom="5dp"-->
-                                <!--android:layout_marginTop="5dp"-->
-                                <!--android:gravity="center"-->
-                                <!--android:orientation="horizontal">-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_marginBottom="5dp"-->
+                            <!--android:layout_marginTop="5dp"-->
+                            <!--android:gravity="center"-->
+                            <!--android:orientation="horizontal">-->
 
-                                <!--<TextView-->
-                                    <!--android:id="@+id/my_email"-->
-                                    <!--android:layout_width="wrap_content"-->
-                                    <!--android:layout_height="wrap_content"-->
-                                    <!--android:gravity="center_horizontal"-->
-                                    <!--android:textSize="13dp" />-->
+                            <!--<TextView-->
+                            <!--android:id="@+id/my_email"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:gravity="center_horizontal"-->
+                            <!--android:textSize="13dp" />-->
 
                             <!--</LinearLayout>-->
 
@@ -338,8 +337,8 @@
                         android:id="@+id/modify_profile"
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
-                        android:clickable="true"
                         android:background="@color/White"
+                        android:clickable="true"
                         android:gravity="center_vertical">
 
                         <TextView
@@ -358,24 +357,45 @@
 
                     <LinearLayout
                         android:id="@+id/btn_logout"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:background="@color/White"
-                    android:gravity="center_vertical">
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:background="@color/White"
+                        android:gravity="center_vertical">
 
-                    <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:text="로그아웃"
-                    android:textSize="13dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:text="로그아웃"
+                            android:textSize="13dp" />
 
                     </LinearLayout>
 
                     <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/Light_Gray" />
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/Light_Gray" />
+
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/btn_sign_out"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="45dp"-->
+                        <!--android:background="@color/White"-->
+                        <!--android:gravity="center_vertical">-->
+
+                        <!--<TextView-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_marginLeft="15dp"-->
+                            <!--android:text="회원탈퇴"-->
+                            <!--android:textSize="13dp" />-->
+
+                    <!--</LinearLayout>-->
+
+                    <!--<View-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1dp"-->
+                        <!--android:background="@color/Light_Gray" />-->
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -394,8 +414,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="15dp"
-                            android:textColor="@color/White"
                             android:text="상대방과 연결끊기"
+                            android:textColor="@color/White"
                             android:textSize="13dp" />
 
                     </LinearLayout>
@@ -408,26 +428,26 @@
     </LinearLayout>
 
     <!--<LinearLayout-->
-        <!--android:id="@+id/btn_disconnect"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="0.8"-->
-        <!--android:background="@color/DeepPink"-->
-        <!--android:gravity="center">-->
+    <!--android:id="@+id/btn_disconnect"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_weight="0.8"-->
+    <!--android:background="@color/DeepPink"-->
+    <!--android:gravity="center">-->
 
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="center"-->
-            <!--android:text="@string/disconnect"-->
-            <!--android:textColor="@color/White"-->
-            <!--android:textSize="18dp" />-->
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:gravity="center"-->
+    <!--android:text="@string/disconnect"-->
+    <!--android:textColor="@color/White"-->
+    <!--android:textSize="18dp" />-->
 
     <!--</LinearLayout>-->
 
     <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="1dp"-->
-        <!--android:background="@color/Bold_Gray" />-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="1dp"-->
+    <!--android:background="@color/Bold_Gray" />-->
 
 </LinearLayout>

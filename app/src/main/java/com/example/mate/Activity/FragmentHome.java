@@ -1,6 +1,7 @@
 package com.example.mate.Activity;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
@@ -28,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.squareup.okhttp.internal.http.RequestException;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -44,6 +47,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FragmentHome extends Fragment {
 
+    private Context mContext;
     private Intent mIntent;
 
     @BindView(R.id.my_name) TextView mMyName;
@@ -78,6 +82,8 @@ public class FragmentHome extends Fragment {
         json = PreferenceUtil.getInstance(getActivity()).getString(PreferenceUtil.MY_INFO, "");
         java = new Gson().fromJson(json, SignUpVo.class);
 
+        mContext = getActivity();
+
         mDatabase = FirebaseDatabase.getInstance();
         mDBRef = mDatabase.getReference().child("user");
         mUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -90,41 +96,6 @@ public class FragmentHome extends Fragment {
 
     private void init() {
 
-        mDBRef.child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot.getValue() == null ) {
-                    Glide.with(getContext()).load(R.mipmap.ic_launcher_ban).into(mMyPic);
-                } else {
-                    Glide.with(getContext()).load(dataSnapshot.getValue().toString()).into(mMyPic);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-        mDBRef.child(mUser.getUid()).child("partnerVo").child("part_profile").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() == null ) {
-                    Glide.with(getContext()).load(R.mipmap.ic_launcher_ban).into(mPartnerPic);
-                } else {
-                    Glide.with(getContext()).load(dataSnapshot.getValue().toString()).into(mPartnerPic);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
         if(!TextUtils.isEmpty(java.getStartDate())){
 
             mSelectStartDay.setText("우리" + "\n" + getDatingPeriod(java.getStartDate()) + "\n" + "일째 사랑중");
@@ -133,6 +104,43 @@ public class FragmentHome extends Fragment {
 
         mMyName.setText(java.getNickname());
         mPartName.setText(java.getPartnerVo().getPart_name());
+
+
+        mDBRef.child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() == null ) {
+                    Glide.with(mContext).load(R.mipmap.ic_launcher_ban).into(mMyPic);
+                } else {
+                    Glide.with(mContext).load(dataSnapshot.getValue().toString()).into(mMyPic);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        mDBRef.child(mUser.getUid()).child("partnerVo").child("part_profile").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() == null ) {
+                        Glide.with(mContext).load(R.mipmap.ic_launcher_ban).into(mPartnerPic);
+                    } else {
+                        Glide.with(mContext).load(dataSnapshot.getValue().toString()).into(mPartnerPic);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
 
         mDiary.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,7 +164,6 @@ public class FragmentHome extends Fragment {
                 openDatePicker();
             }
         });
-
 
     }
 
@@ -231,5 +238,4 @@ public class FragmentHome extends Fragment {
                 });
 
     }
-
 }

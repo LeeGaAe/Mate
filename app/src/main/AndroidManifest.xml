@@ -52,6 +52,7 @@
         <activity android:name=".Activity.ThemeActivity" />
         <activity android:name=".Activity.BackgroundActivity" />
         <activity android:name=".Activity.MyInfoActivity" />
+        <activity android:name=".Activity.NoticeActivity" />
 
 
         <activity
@@ -68,6 +69,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Activity.NoticeDialog"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.Light.Dialog"/>
 
 
         <service android:name=".Activity.Firebase.FirebaseMessagingService">

@@ -15,6 +15,7 @@ public class DiaryVo {
     public String date;
     public String groupID;
     public String photoUri;
+    public String writerProfileUri;
 
     public DiaryVo(){
 
@@ -74,5 +75,13 @@ public class DiaryVo {
 
     public void setPhotoUri(String photoUri) {
         this.photoUri = photoUri;
+    }
+
+    public String getWriterProfileUri() {
+        return writerProfileUri;
+    }
+
+    public void setWriterProfileUri(String writerProfileUri) {
+        this.writerProfileUri = writerProfileUri;
     }
 }

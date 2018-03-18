@@ -71,6 +71,7 @@ public class DiaryModifyActivity extends Activity {
 
     String GroupID;
     String photoUri;
+    String Profile;
 
 
     @Override
@@ -149,6 +150,7 @@ public class DiaryModifyActivity extends Activity {
                 vo.setDate(mDiaryDate.getText().toString());
                 vo.setWriterId(java.getNickname());
                 vo.setGroupID(GroupID);
+                vo.setWriterProfileUri(Profile);
                 vo.setPhotoUri(photoUri);
 
                 mDBRef.child("diary").child(postingId).setValue(vo);
@@ -228,6 +230,25 @@ public class DiaryModifyActivity extends Activity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 GroupID = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference profile = mDBRef.child("user").child(mUser.getUid()).child("profile");
+        profile.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() == null) {
+                    Profile = "";
+                } else {
+                    Profile = dataSnapshot.getValue().toString();
+                }
+
             }
 
             @Override

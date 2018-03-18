@@ -86,14 +86,18 @@
             android:paddingLeft="50dp">
 
             <ImageView
+                android:id="@+id/isNotImage"
                 android:layout_width="50dp"
                 android:layout_height="25dp"
-                android:src="@drawable/note" />
+                android:src="@drawable/note"
+                android:visibility="gone"/>
 
             <ImageView
+                android:id="@+id/isImage"
                 android:layout_width="50dp"
                 android:layout_height="25dp"
-                android:src="@drawable/btn_camera" />
+                android:src="@drawable/btn_camera"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

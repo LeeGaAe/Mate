@@ -5,18 +5,6 @@
     android:background="@mipmap/intro_background"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/loading"
-            android:layout_width="70dp"
-            android:layout_height="70dp" />
-
-    </RelativeLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -100,7 +88,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="35dp"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -113,6 +101,15 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="* 이메일형식으로 입력해주세요. *"
+                android:textColor="@color/White"
+                android:layout_marginBottom="5dp"
+                android:textSize="12sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -349,10 +346,16 @@
                 android:orientation="vertical"
                 android:paddingBottom="20dp">
 
+                <ImageView
+                    android:id="@+id/loading"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp" />
+
                 <ImageButton
                     android:id="@+id/btn_complete_sign_up"
                     android:layout_width="240dp"
                     android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/selector_btn_complete_sign_up" />
 
             </LinearLayout>

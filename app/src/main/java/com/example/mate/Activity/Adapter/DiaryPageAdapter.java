@@ -2,10 +2,13 @@ package com.example.mate.Activity.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -34,9 +37,9 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
     private Context mContext;
     private Intent mIntent;
 
-    FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-    DatabaseReference mDBRef = mDatabase.getReference().child("user");
-    FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+//    FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+//    DatabaseReference mDBRef = mDatabase.getReference().child("user");
+//    FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
 
     private ArrayList<DiaryVo> mItems = new ArrayList<>();
 
@@ -67,25 +70,21 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
         holder.mWriter.setText(mItems.get(position).getWriterId());
         holder.mDate.setText(mItems.get(position).getDate());
 
-        mDBRef.child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() == null) {
+        if (mItems.get(position).getWriterProfileUri().equals("")) {
+            Glide.with(mContext).load(R.mipmap.ic_launcher_ban).into(holder.mMyPic);
+        } else {
+            Glide.with(mContext).load(mItems.get(position).getWriterProfileUri()).into(holder.mMyPic);
+        }
 
-                    Glide.with(mContext).load(R.mipmap.ic_launcher_ban).into(holder.mMyPic);
+        if (mItems.get(position).getPhotoUri().equals("")) {
 
-                } else {
-                    Glide.with(mContext).load(dataSnapshot.getValue().toString()).into(holder.mMyPic);
-                }
-            }
+            holder.mNotImage.setVisibility(View.VISIBLE);
+            holder.mImage.setVisibility(View.GONE);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
+        } else {
+            holder.mNotImage.setVisibility(View.GONE);
+            holder.mImage.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -102,6 +101,9 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
         private TextView mDate;
         private CircleImageView mMyPic;
 
+        private ImageView mNotImage;
+        private ImageView mImage;
+
 
         public ItemViewHolder(View view) {
             super(view);
@@ -112,7 +114,8 @@ public class DiaryPageAdapter extends RecyclerView.Adapter<DiaryPageAdapter.Item
             mWriter = (TextView) itemView.findViewById(R.id.writer);
             mDate = (TextView) itemView.findViewById(R.id.date);
             mMyPic = (CircleImageView) itemView.findViewById(R.id.my_pic);
-
+            mNotImage = (ImageView) itemView.findViewById(R.id.isNotImage);
+            mImage = (ImageView) itemView.findViewById(R.id.isImage);
 
         }
 

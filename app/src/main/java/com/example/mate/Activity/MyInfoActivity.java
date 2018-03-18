@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.mate.Activity.Vo.ChatVo;
 import com.example.mate.Activity.Vo.PartnerVo;
 import com.example.mate.Activity.Vo.SignUpVo;
 import com.example.mate.R;
@@ -66,7 +67,7 @@ public class MyInfoActivity extends Activity {
     private Intent mIntent;
 
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-    private DatabaseReference mDBRef = mDatabase.getReference("user");
+    private DatabaseReference mDBRef = mDatabase.getReference();
     private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseStorage mStorage = FirebaseStorage.getInstance();
     private StorageReference storageRef = mStorage.getReferenceFromUrl("gs://gamate-4c0ad.appspot.com");
@@ -119,7 +120,7 @@ public class MyInfoActivity extends Activity {
         java = new Gson().fromJson(json, SignUpVo.class);
 
 
-        mDBRef.child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDBRef.child("user").child(mUser.getUid()).child("profile").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -195,7 +196,7 @@ public class MyInfoActivity extends Activity {
 
                 mMyName.setText(mEditName.getText().toString());
 
-                mDBRef.child(mUser.getUid()).child("nickname").setValue(mMyName.getText().toString())
+                mDBRef.child("user").child(mUser.getUid()).child("nickname").setValue(mMyName.getText().toString())
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
@@ -207,7 +208,7 @@ public class MyInfoActivity extends Activity {
                             }
                         });
 
-                mDBRef.child(java.getPartnerVo().getPart_uid()).child("partnerVo").child("part_name").setValue(mMyName.getText().toString())
+                mDBRef.child("user").child(java.getPartnerVo().getPart_uid()).child("partnerVo").child("part_name").setValue(mMyName.getText().toString())
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
@@ -241,12 +242,7 @@ public class MyInfoActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                FirebaseAuth.getInstance().signOut();
-
-                mIntent = new Intent(mContext, LoginActivity.class);
-                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(mIntent);
-                finish();
+                openLogout();
 
             }
         });
@@ -310,8 +306,6 @@ public class MyInfoActivity extends Activity {
         mIntent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
         startActivityForResult(mIntent, Const.TAKE_PICTURE_ALBUM);
 
-        onBackPressed();
-
     }
 
 
@@ -348,7 +342,9 @@ public class MyInfoActivity extends Activity {
                 if (extra != null) {
 
                     Bitmap photo = extra.getParcelable("data");
+
                     Glide.with(mContext).load(Cropfile).into(mMyPic);
+
                     storeCropImage(photo, Cropfile);
 
 
@@ -362,8 +358,8 @@ public class MyInfoActivity extends Activity {
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                             Uri uri = taskSnapshot.getDownloadUrl();
-                            mDBRef.child(mUser.getUid()).child("profile").setValue(uri.toString());
-                            mDBRef.child(java.getPartnerVo().getPart_uid()).child("partnerVo").child("part_profile").setValue(uri.toString());
+                            mDBRef.child("user").child(mUser.getUid()).child("profile").setValue(uri.toString());
+                            mDBRef.child("user").child(java.getPartnerVo().getPart_uid()).child("partnerVo").child("part_profile").setValue(uri.toString());
                         }
                     });
 
@@ -383,7 +379,7 @@ public class MyInfoActivity extends Activity {
 
 
     //크롭한 이미지 갤러리에 저장
-    private void storeCropImage(Bitmap bitmap, String cropfile){
+    private void storeCropImage(Bitmap bitmap, String Cropfile){
 
         String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/mate";
         File directory_mate = new File(dirPath);
@@ -391,7 +387,7 @@ public class MyInfoActivity extends Activity {
         if (!directory_mate.exists())
             directory_mate.mkdir();
 
-        File copyFile = new File(cropfile);
+        File copyFile = new File(Cropfile);
         BufferedOutputStream out = null;
 
         try{
@@ -412,7 +408,7 @@ public class MyInfoActivity extends Activity {
 
     private void search() {
 
-        DatabaseReference partnerUid = mDBRef.child(mUser.getUid()).child("partnerVo").child("part_uid");
+        DatabaseReference partnerUid = mDBRef.child("user").child(mUser.getUid()).child("partnerVo").child("part_uid");
         partnerUid.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -429,6 +425,39 @@ public class MyInfoActivity extends Activity {
 
 
 
+    private void openLogout() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext, R.style.MyAlertDialogStyle);
+
+        dialog.setTitle("로그아웃");
+        dialog.setMessage("로그아웃을 진행하시겠습니까?");
+        dialog.setCancelable(false);
+
+        dialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                FirebaseAuth.getInstance().signOut();
+
+                mIntent = new Intent(mContext, LoginActivity.class);
+                mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(mIntent);
+                finish();
+
+            }
+        });
+
+        dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+    }
+
+
     private void openDisConnectDialog() {
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(mContext, R.style.MyAlertDialogStyle);
@@ -442,11 +471,10 @@ public class MyInfoActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
 
 
-                mDBRef.child(mUser.getUid()).child("groupId").setValue(null);
-                mDBRef.child(mUser.getUid()).child("partnerVo").setValue(null);
+                mDBRef.child("user").child(mUser.getUid()).child("groupId").setValue(null);
+                mDBRef.child("user").child(mUser.getUid()).child("partnerVo").setValue(null);
 
-
-                Toast.makeText(mContext, "삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "완료되었습니다.", Toast.LENGTH_SHORT).show();
 
                 mIntent = new Intent(mContext, LoginActivity.class);
                 mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
